@@ -1,7 +1,7 @@
 let config = {
         type: Phaser.AUTO,
-        width: 1280,
-        height: 960,
+        width: 1024,
+        height: 576,
         physics:{
                 default: 'arcade',
                 arcade:{
@@ -9,8 +9,9 @@ let config = {
                         debug: true
                 }
         },
-        scene: [ Menu, Play ],
-        backgroundColor: 0x9F4A54
+        //scene: [ Menu, Play ],
+        scene: [ Play ],
+        backgroundColor: 0xFF4F4F
 }
 
 let game = new Phaser.Game(config);
@@ -20,9 +21,12 @@ let centerX = game.config.width/2;
 let centerY = game.config.height/2;
 let w = game.config.width;
 let h = game.config.height;
-let score;
-let paddle = null;
-
+let player = null;
+let indi= null;
+let reticle= null;
+let moveKeys= null;
+let bullets= null;
+let time= 0;
 // reserve keys
-let keySPACE, keyW, keyA, keyS, keyD;
+let keySPACE, keyW, keyA, keyS, keyD, keyFIRE, keyESC;
 var cursors;
