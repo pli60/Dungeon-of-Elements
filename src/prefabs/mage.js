@@ -22,8 +22,8 @@ class mage extends Phaser.Physics.Arcade.Sprite {
             //scene.physics.add.sprite(x,y, 'indicator');
             // if (bullet)
             // {
-            //     //this.physics.add.collider(enemy, bullet, enemyHitCallback);
-            // }
+            scene.physics.add.collider(scene.enemies, scene.playerBullets, scene.enemyHit);
+            //}
         }, scene);
 
         // Locks pointer on mousedown

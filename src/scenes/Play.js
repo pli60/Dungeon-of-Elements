@@ -77,6 +77,19 @@ class Play extends Phaser.Scene {
          });
     }
 
+    spawnEnemy(x, y) {
+        let enemy = this.physics.add.sprite(x, y, 'player');
+        this.enemies.add(enemy);
+        enemy.setOrigin(0.5, 0.5);
+        enemy.setPosition(x, y);
+    }
+
+    enemyHit(enemy, bullet) {
+        enemy.destroy();
+        currScene.spawnEnemy(enemy.x, Phaser.Math.Between(centerY - 288, centerY + 288));
+        bullet.destroy();
+    }
+
     preload ()
     {
         //this.load.spritesheet('player', 'assets/sprites/mage.png',
@@ -95,7 +108,9 @@ class Play extends Phaser.Scene {
     {
 
         this.physics.world.setBounds(0, 0, 1024, 576);
+        currScene = this;
 
+        this.enemies = this.physics.add.group()
         this.playerBullets = this.physics.add.group()//{ classType: Bullet, runChildUpdate: true });
         //enemyBullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
 
@@ -114,11 +129,14 @@ class Play extends Phaser.Scene {
 
         keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
         keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
-
         keyESC = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
         keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
         this.aimAngle = 0;
+
+        this.spawnEnemy(0, centerY);
+        this.spawnEnemy(1024, centerY);
+        //this.physics.add.collider(this.enemies, this.playerBullets, this.enemyHit);
 
         //code modified from phaser example
         // Fires bullet
@@ -185,8 +203,11 @@ class Play extends Phaser.Scene {
                 game.input.mouse.releasePointerLock();
             }
         }
+        //this.physics.add.collider(this.enemies, this.playerBullets, this.enemyHit);
         
         //player.setAccelerationX(this.speed);
+
+        //this.physics.world.collide(this.enemies, this.playerBullets, this.DinoCollision, null, this);
         
         reticle.body.velocity.x = player.body.velocity.x;
         reticle.body.velocity.y = player.body.velocity.y;

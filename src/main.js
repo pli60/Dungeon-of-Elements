@@ -24,9 +24,10 @@ let h = game.config.height;
 let player = null;
 let indi= null;
 let reticle= null;
-let moveKeys= null;
+//let moveKeys= null;
 let bullets= null;
 let time= 0;
+let currScene = null;
 // reserve keys
 let keySPACE, keyW, keyA, keyS, keyD, keyFIRE, keyESC;
 var cursors;
