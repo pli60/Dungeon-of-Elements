@@ -18,7 +18,7 @@ class mage extends Phaser.Physics.Arcade.Sprite {
         scene.input.on('pointerdown', function (pointer, time, lastFired) {
             if (player.active === false)
                 return;
-            var bullet = scene.spawnBullet(indi.x, indi.y, this.aimAngle);
+            var bullet = scene.spawnBullet(indi.x, indi.y, scene.aimAngle);
             //scene.physics.add.sprite(x,y, 'indicator');
             // if (bullet)
             // {
