@@ -97,7 +97,7 @@ class Play extends Phaser.Scene {
         //);
 
         this.load.image('player', 'assets/sprites/mage.png');
-        this.load.image('background', 'assets/sprites/background.png');
+        this.load.image('background', 'assets/grass.png');
         this.load.image('target', 'assets/sprites/cross.png');
         this.load.image('indicator', 'assets/sprites/ball.png');
         this.load.image('bullet', 'assets/sprites/ball.png');
@@ -129,6 +129,8 @@ class Play extends Phaser.Scene {
 
         keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
         keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+        keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+        keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
         keyESC = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
         keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 

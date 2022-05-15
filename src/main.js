@@ -10,7 +10,7 @@ let config = {
                 }
         },
         //scene: [ Menu, Play ],
-        scene: [ Play ],
+        scene: [ Play, Menu ],
         backgroundColor: 0xFF4F4F
 }
 
@@ -22,11 +22,11 @@ let centerY = game.config.height/2;
 let w = game.config.width;
 let h = game.config.height;
 let player = null;
-let indi= null;
-let reticle= null;
+let indi = null;
+let reticle = null;
 //let moveKeys= null;
-let bullets= null;
-let time= 0;
+let bullets = null;
+let time = 0;
 let currScene = null;
 // reserve keys
 let keySPACE, keyW, keyA, keyS, keyD, keyFIRE, keyESC;

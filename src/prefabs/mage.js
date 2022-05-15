@@ -68,10 +68,22 @@ class mage extends Phaser.Physics.Arcade.Sprite {
             //test
             player.setFlipX(false);
         }
-         else {
+        else if (keyW.isDown) {
+            player.setAccelerationY(-600);
+
+            //test
+            player.setFlipX(false);
+        }
+        else if (keyS.isDown) {
+            player.setAccelerationY(600);
+
+            //test
+            player.setFlipX(false);
+        }
+        else {
             player.setAccelerationX(0);
 
-         }
+        }
 
     }
 

@@ -39,7 +39,7 @@ class Menu extends Phaser.Scene {
                             
                     // }
                     //this.sound.play('select');
-                    //this.scene.start('playScene');
+                    this.scene.start('playScene');
             }
     }
 
