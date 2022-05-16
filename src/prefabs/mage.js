@@ -13,18 +13,26 @@ class mage extends Phaser.Physics.Arcade.Sprite {
         this.speedScale = 1;
         scene.cameras.main.startFollow(this);
 
+        this.weapon = 0;
+
         this.setOrigin(0.5, 0.5).setDisplaySize(64, 64).setCollideWorldBounds(true).setDrag(1500, 1500);
 
         scene.input.on('pointerdown', function (pointer, time, lastFired) {
             if (player.active === false)
                 return;
-            var bullet = scene.spawnBullet(indi.x, indi.y, scene.aimAngle);
+            if(this.weapon == 0) {
+                var bullet = scene.spawnBullet(indi.x, indi.y, scene.aimAngle, 1);
+            }else{
+                var bullet = scene.spawnBullet(indi.x, indi.y, scene.aimAngle, 0);
+                var bullet = scene.spawnBullet(indi.x, indi.y, scene.aimAngle+1, 0);
+                var bullet = scene.spawnBullet(indi.x, indi.y, scene.aimAngle-1, 0);
+            }
             //scene.physics.add.sprite(x,y, 'indicator');
             // if (bullet)
             // {
             scene.physics.add.collider(scene.enemies, scene.playerBullets, scene.enemyHit);
             //}
-        }, scene);
+        }, this);
 
         // Locks pointer on mousedown
         game.canvas.addEventListener('mousedown', function () {
@@ -32,10 +40,10 @@ class mage extends Phaser.Physics.Arcade.Sprite {
         });
 
         // Exit pointer lock when Q or escape (by default) is pressed.
-        scene.input.keyboard.on('keydown_Q', function (event) {
-            if (game.input.mouse.locked)
-                game.input.mouse.releasePointerLock();
-        }, 0, scene);
+        // scene.input.keyboard.on('keydown_Q', function (event) {
+        //     if (game.input.mouse.locked)
+        //         game.input.mouse.releasePointerLock();
+        // }, 0, scene);
 
         // update reticle upon locked pointer move
         scene.input.on('pointermove', function (pointer) {
@@ -54,35 +62,61 @@ class mage extends Phaser.Physics.Arcade.Sprite {
         }, scene);
     }
 
+    //switch the size of the indi
+    switchSize() {
+        if (this.weapon == 0) {
+            indi.setScale(1);
+            this.weapon = 1;
+        } else {
+            indi.setScale(0.5);
+            this.weapon = 0;
+        }
+    }
+
+
+
     update() {
         if (keyA.isDown) {
-            player.setAccelerationX(-600);
+            player.setAccelerationX(-1500);
+            //player.setAccelerationY(0);
 
             //test
             player.setFlipX(true);
 
         }
         else if (keyD.isDown) {
-            player.setAccelerationX(600);
+            player.setAccelerationX(1500);
+            ///player.setAccelerationY(0);
 
             //test
             player.setFlipX(false);
-        }
-        else if (keyW.isDown) {
-            player.setAccelerationY(-600);
-
-            //test
-            player.setFlipX(false);
-        }
-        else if (keyS.isDown) {
-            player.setAccelerationY(600);
-
-            //test
-            player.setFlipX(false);
-        }
+        }       
         else {
             player.setAccelerationX(0);
 
+
+        }
+
+        if (keyW.isDown) {
+            player.setAccelerationY(-1500);
+            //player.setAccelerationX(0);
+
+            //test
+
+        }
+        else if (keyS.isDown) {
+            player.setAccelerationY(1500);
+           // player.setAccelerationX(0);
+
+            //test
+
+        }
+        else {
+            player.setAccelerationY(0);
+
+        }
+        if (Phaser.Input.Keyboard.JustDown(keySPACE)) {
+            this.switchSize();
         }
 
     }

@@ -62,16 +62,23 @@ class Play extends Phaser.Scene {
     }
 
     //spawn a test bullet
-    spawnBullet (x, y, angle) {
+    spawnBullet (x, y, angle, type = 0) {
         let bullet = this.physics.add.sprite(x,y, 'indicator');
         this.playerBullets.add(bullet);
+        //play shoot sound
+        this.sound.play('shoot');
         bullet.setOrigin(0.5, 0.5);
         bullet.setPosition(x, y);
         bullet.setRotation(angle);
         bullet.setDepth(2);
         bullet.body.velocity.x = Math.cos(angle) * (500) + player.body.velocity.x;
         bullet.body.velocity.y = Math.sin(angle) * (500) + player.body.velocity.y;
-        bullet.setSize(32, 32).setDisplaySize(32, 32);
+        if(type == 0){
+            bullet.setSize(32, 32).setDisplaySize(32, 32);
+        }
+        else{
+            bullet.setSize(64, 64).setDisplaySize(64, 64);
+        }
         this.time.delayedCall(1000, () => {
             bullet.destroy();
          });
@@ -101,14 +108,17 @@ class Play extends Phaser.Scene {
         this.load.image('target', 'assets/sprites/cross.png');
         this.load.image('indicator', 'assets/sprites/ball.png');
         this.load.image('bullet', 'assets/sprites/ball.png');
+        this.load.audio('shoot', 'assets/shoot.wav');
         
     }
 
     create ()
     {
-
+        //world size
         this.physics.world.setBounds(0, 0, 1024, 576);
         currScene = this;
+
+
 
         this.enemies = this.physics.add.group()
         this.playerBullets = this.physics.add.group()//{ classType: Bullet, runChildUpdate: true });
@@ -138,6 +148,19 @@ class Play extends Phaser.Scene {
 
         this.spawnEnemy(0, centerY);
         this.spawnEnemy(1024, centerY);
+
+        let menuConfig = {
+            fontFamily: 'Impact',
+            fontSize: '28px',
+            color: '#000000',
+            align: 'center',
+            padding: {
+                top: 5,
+                bottom: 5,
+            },
+            fixedWidth: 0
+        }
+        this.Text = this.add.text(game.config.width/2, game.config.height/5 * 3, 'Press <SPACE> to switch weapon', menuConfig).setOrigin(0.5);
         //this.physics.add.collider(this.enemies, this.playerBullets, this.enemyHit);
 
         //code modified from phaser example
@@ -192,6 +215,7 @@ class Play extends Phaser.Scene {
     update (time, delta)
     {
         player.update();
+
         this.aimAngle = Phaser.Math.Angle.Between(player.x, player.y, reticle.x, reticle.y);
         // Rotates player to face towards reticle
         //player.rotation = Phaser.Math.Angle.Between(player.x, player.y, reticle.x, reticle.y);
