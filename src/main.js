@@ -31,3 +31,5 @@ let currScene = null;
 // reserve keys
 let keySPACE, keyW, keyA, keyS, keyD, keyFIRE, keyESC;
 var cursors;
+
+
