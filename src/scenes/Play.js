@@ -63,25 +63,10 @@ class Play extends Phaser.Scene {
 
     //spawn a test bullet
     spawnBullet (x, y, angle, type = 0) {
-        let bullet = this.physics.add.sprite(x,y, 'indicator');
-        this.playerBullets.add(bullet);
-        //play shoot sound
-        this.sound.play('shoot');
-        bullet.setOrigin(0.5, 0.5);
-        bullet.setPosition(x, y);
-        bullet.setRotation(angle);
+        var bullet = new BulletBase(this, x, y, 'indicator', 500, angle, type);
         bullet.setDepth(2);
-        bullet.body.velocity.x = Math.cos(angle) * (500) + player.body.velocity.x;
-        bullet.body.velocity.y = Math.sin(angle) * (500) + player.body.velocity.y;
-        if(type == 0){
-            bullet.setSize(32, 32).setDisplaySize(32, 32);
-        }
-        else{
-            bullet.setSize(64, 64).setDisplaySize(64, 64);
-        }
-        this.time.delayedCall(1000, () => {
-            bullet.destroy();
-         });
+        this.sound.play('shoot');
+        
     }
 
     spawnEnemy(x, y) {
@@ -161,54 +146,7 @@ class Play extends Phaser.Scene {
             fixedWidth: 0
         }
         this.Text = this.add.text(game.config.width/2, game.config.height/5 * 3, 'Press <SPACE> to switch weapon', menuConfig).setOrigin(0.5);
-        //this.physics.add.collider(this.enemies, this.playerBullets, this.enemyHit);
 
-        //code modified from phaser example
-        // Fires bullet
-        // this.input.on('pointerdown', function (pointer, time, lastFired) {
-        //     if (player.active === false)
-        //         return;
-        //     var bullet = this.spawnBullet(indi.x, indi.y, this.aimAngle);
-        //     // if (bullet)
-        //     // {
-        //     //     //this.physics.add.collider(enemy, bullet, enemyHitCallback);
-        //     // }
-        // }, this);
-
-        // // Locks pointer on mousedown
-        // game.canvas.addEventListener('mousedown', function () {
-        //     game.input.mouse.requestPointerLock();
-        // });
-
-        // // Exit pointer lock when Q or escape (by default) is pressed.
-        // this.input.keyboard.on('keydown_Q', function (event) {
-        //     if (game.input.mouse.locked)
-        //         game.input.mouse.releasePointerLock();
-        // }, 0, this);
-
-        // // update reticle upon locked pointer move
-        // this.input.on('pointermove', function (pointer) {
-        //     if (this.input.mouse.locked)
-        //     {
-        //         reticle.x += pointer.movementX;
-        //         reticle.y += pointer.movementY;
-        //         if(reticle.x > player.x){
-        //             player.setFlipX(false);
-        //             //player.setFlipY(false);
-        //         }else{
-        //             player.setFlipX(true);
-        //             //player.setFlipY(true);
-        //         }
-        //     }
-        // }, this);
-
-
-
-
-        // this.speed = 0;
-        // this.speedScale = 1;
-        // this.speedCap = 300;
-        // this.isDashing = false;
     }
 
 
