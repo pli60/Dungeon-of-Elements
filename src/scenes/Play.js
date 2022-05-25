@@ -62,10 +62,10 @@ class Play extends Phaser.Scene {
     }
 
     //spawn a test bullet
-    spawnBullet (x, y, angle, type = 0) {
-        var bullet = new BulletBase(this, x, y, 'indicator', 500, angle, type);
+    spawnBullet (x, y, angle, element = 0, type = 0) {
+        var bullet = new BulletBase(this, x, y, elementSprites[element], 500, angle, type);
         bullet.setDepth(2);
-        this.sound.play('shoot');
+        
         
     }
 
@@ -74,6 +74,11 @@ class Play extends Phaser.Scene {
         this.enemies.add(enemy);
         enemy.setOrigin(0.5, 0.5);
         enemy.setPosition(x, y);
+    }
+
+    spawnGem(x,y,element = 0){
+        let gem = new Gem(this, x, y, element);
+        //this.gemsGroup.add(gem);
     }
 
     enemyHit(enemy, bullet) {
@@ -92,7 +97,15 @@ class Play extends Phaser.Scene {
         this.load.image('background', 'assets/grass.png');
         this.load.image('target', 'assets/sprites/cross.png');
         this.load.image('indicator', 'assets/sprites/ball.png');
+
         this.load.image('bullet', 'assets/sprites/ball.png');
+        this.load.image('waterGem', 'assets/sprites/WaterGem.png');
+        this.load.image('fireGem', 'assets/sprites/FireGem.png');
+        this.load.image('lightningGem', 'assets/sprites/LightningGem.png');
+
+        this.load.image('circle', 'assets/sprites/Circle.png');
+        this.load.image('arrow', 'assets/sprites/arrow.png');
+
         this.load.audio('shoot', 'assets/shoot.wav');
         
     }
@@ -106,7 +119,18 @@ class Play extends Phaser.Scene {
 
 
         this.enemies = this.physics.add.group()
-        this.playerBullets = this.physics.add.group()//{ classType: Bullet, runChildUpdate: true });
+        this.enemies.runChildUpdate = true;
+        this.enemies.active = true;
+
+        this.playerBullets = this.physics.add.group()
+        this.playerBullets.runChildUpdate = true;
+        this.playerBullets.active = true;
+
+        this.gemsGroup = this.physics.add.group()
+        this.gemsGroup.runChildUpdate = true;
+        this.gemsGroup.active = true;
+        
+        //{ classType: Bullet, runChildUpdate: true });
         //enemyBullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
 
         var background = this.add.image(0, 0, 'background');
@@ -129,10 +153,15 @@ class Play extends Phaser.Scene {
         keyESC = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
         keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
+        this.zoomTarget = 1;
+        this.zoomSpeed = 0;
+        this.zoomType = 0;
+        this.currentZoom = 1;
+        this.zooming = false;
+
         this.aimAngle = 0;
 
-        this.spawnEnemy(0, centerY);
-        this.spawnEnemy(1024, centerY);
+        this.spawnLevel();
 
         let menuConfig = {
             fontFamily: 'Impact',
@@ -145,8 +174,17 @@ class Play extends Phaser.Scene {
             },
             fixedWidth: 0
         }
-        this.Text = this.add.text(game.config.width/2, game.config.height/5 * 3, 'Press <SPACE> to switch weapon', menuConfig).setOrigin(0.5);
+        this.Text = this.add.text(game.config.width/2, game.config.height/5 * 3, 'long HOLD <mouse buttons> to pick gems', menuConfig).setOrigin(0.5);
 
+    }
+
+    spawnLevel(){
+        this.spawnEnemy(0, centerY);
+        this.spawnEnemy(1024, centerY);
+        this.spawnGem(900, centerY-180,3);
+        this.spawnGem(200, centerY-180,1);
+        this.spawnGem(900, centerY+180,2);
+        this.spawnGem(200, centerY+180,3);
     }
 
 
@@ -172,13 +210,20 @@ class Play extends Phaser.Scene {
         //player.setAccelerationX(this.speed);
 
         //this.physics.world.collide(this.enemies, this.playerBullets, this.DinoCollision, null, this);
-        
-        reticle.body.velocity.x = player.body.velocity.x;
-        reticle.body.velocity.y = player.body.velocity.y;
         indi.body.velocity.x = player.body.velocity.x;
         indi.body.velocity.y = player.body.velocity.y;
-        this.constrainReticle(reticle);
-        
+        reticle.body.velocity.x = player.body.velocity.x;
+        reticle.body.velocity.y = player.body.velocity.y;
 
+        
+        this.constrainReticle(reticle);
+
+
+        
+        // if(this.zooming){
+        //     this.cameras.main.zoom = this.lerp(this.currentZoom,this.zoomTarget,(this.zoomSpeed*delta)/1000);
+        // }else{
+        //     this.currentZoom = this.cameras.main.zoom;
+        // }
     }
 }
