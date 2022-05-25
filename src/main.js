@@ -28,6 +28,7 @@ let reticle = null;
 let bullets = null;
 let time = 0;
 let currScene = null;
+let elementSprites = ['bullet','waterGem','fireGem','lightningGem']
 // reserve keys
 let keySPACE, keyW, keyA, keyS, keyD, keyFIRE, keyESC;
 var cursors;
