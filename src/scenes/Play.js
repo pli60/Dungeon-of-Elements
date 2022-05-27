@@ -84,7 +84,9 @@ class Play extends Phaser.Scene {
     enemyHit(enemy, bullet) {
         enemy.destroy();
         currScene.spawnEnemy(enemy.x, Phaser.Math.Between(centerY - 288, centerY + 288));
-        bullet.destroy();
+        if(bullet.name == 'bullet'){
+            bullet.hit();
+        }
     }
 
     preload ()
@@ -92,20 +94,30 @@ class Play extends Phaser.Scene {
         //this.load.spritesheet('player', 'assets/sprites/mage.png',
             //{ frameWidth: 64, frameHeight: 64 }
         //);
-
+        
+        //main asset
         this.load.image('player', 'assets/sprites/mage.png');
         this.load.image('background', 'assets/grass.png');
         this.load.image('target', 'assets/sprites/cross.png');
         this.load.image('indicator', 'assets/sprites/ball.png');
 
+        //enemies
+
+        //objects
         this.load.image('bullet', 'assets/sprites/ball.png');
         this.load.image('waterGem', 'assets/sprites/WaterGem.png');
         this.load.image('fireGem', 'assets/sprites/FireGem.png');
         this.load.image('lightningGem', 'assets/sprites/LightningGem.png');
 
+        //VFX
         this.load.image('circle', 'assets/sprites/Circle.png');
+        this.load.image('ball', 'assets/sprites/Circle2.png');
         this.load.image('arrow', 'assets/sprites/arrow.png');
+        this.load.image('highlight', 'assets/sprites/Ring.png');
+        this.load.image('magi1', 'assets/sprites/MAGI1.png');
+        this.load.image('magi2', 'assets/sprites/MAGI2.png');
 
+        //audio
         this.load.audio('shoot', 'assets/shoot.wav');
         
     }
@@ -139,13 +151,14 @@ class Play extends Phaser.Scene {
         reticle = this.physics.add.sprite(centerX,centerY, 'target');
         indi = this.physics.add.sprite(centerX,centerY, 'indicator');
 
+
+
         background.setOrigin(0, 0)
         //player.setOrigin(0.5, 0.5).setDisplaySize(64, 64).setCollideWorldBounds(true).setDrag(1500, 1500);
         reticle.setOrigin(0.5, 0.5).setDisplaySize(25, 25).setCollideWorldBounds(true);
         indi.setOrigin(0.5, 0.5).setSize(32, 32).setDisplaySize(32, 32).setCollideWorldBounds(false);
         
         //this.cameras.main.zoom = 1;
-
         keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
         keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
         keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
@@ -162,6 +175,7 @@ class Play extends Phaser.Scene {
         this.aimAngle = 0;
 
         this.spawnLevel();
+        this.physics.add.collider(this.enemies, this.playerBullets, this.enemyHit);
 
         let menuConfig = {
             fontFamily: 'Impact',

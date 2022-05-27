@@ -4,6 +4,7 @@ class BulletBase extends Phaser.Physics.Arcade.Sprite {
             super(scene, x, y, texture);
             scene.add.existing(this);
             scene.playerBullets.add(this);
+            this.name = 'bullet';
 
             //this.body.setDrag(800);
             this.setOrigin(0.5, 0.5);
@@ -13,7 +14,6 @@ class BulletBase extends Phaser.Physics.Arcade.Sprite {
             this.end = false;
             this.body.velocity.x = Math.cos(angle) * (velocity) + player.body.velocity.x;
             this.body.velocity.y = Math.sin(angle) * (velocity) + player.body.velocity.y;
-            scene.physics.add.collider(scene.enemies, scene.playerBullets, scene.enemyHit);
             if(type == 0){
                 this.setSize(32, 32).setDisplaySize(32, 32);
             }
@@ -31,7 +31,7 @@ class BulletBase extends Phaser.Physics.Arcade.Sprite {
     }
 
     hit(){
-
+        this.die();
     }
 
     die(){
