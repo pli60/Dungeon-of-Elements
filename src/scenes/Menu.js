@@ -30,8 +30,14 @@ class Menu extends Phaser.Scene {
                     },
                     fixedWidth: 0
                 }
-            this.Text = this.add.text(game.config.width/2, game.config.height/3 * 2, 'Press <SPACE> to start', menuConfig).setOrigin(0.5);
+            this.Text = this.add.text(game.config.width/2, game.config.height/3 * 2, '[Click here to start]', menuConfig).setOrigin(0.5);
+            this.Text.setInteractive();
+            this.input.on('gameobjectup', this.clicked, this);
     }
+    clicked(pointer, gameObject) {
+                //this.sound.play('select');
+                this.scene.start("playScene");
+        }
 
     update() {
             if (Phaser.Input.Keyboard.JustDown(keySPACE)) {

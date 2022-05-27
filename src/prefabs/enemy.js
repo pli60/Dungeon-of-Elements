@@ -23,6 +23,10 @@ class enemyBase extends Phaser.Physics.Arcade.Sprite {
 
     }
 
+    hit(){
+        
+    }
+
 
 
     update() {
