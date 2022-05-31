@@ -70,10 +70,9 @@ class Play extends Phaser.Scene {
     }
 
     spawnEnemy(x, y) {
-        let enemy = this.physics.add.sprite(x, y, 'player');
-        this.enemies.add(enemy);
-        enemy.setOrigin(0.5, 0.5);
-        enemy.setPosition(x, y);
+        //let enemy = this.physics.add.sprite(x, y, 'player');
+        let enemy = new Enemy(this, x, y, 'player', 0);
+
     }
 
     spawnGem(x,y,element = 0){
@@ -82,8 +81,8 @@ class Play extends Phaser.Scene {
     }
 
     enemyHit(enemy, bullet) {
-        enemy.destroy();
-        currScene.spawnEnemy(enemy.x, Phaser.Math.Between(centerY - 288, centerY + 288));
+        enemy.hit(bullet.element);
+        //currScene.spawnEnemy(enemy.x, Phaser.Math.Between(centerY - 288, centerY + 288));
         if(bullet.name == 'bullet'){
             bullet.hit();
         }

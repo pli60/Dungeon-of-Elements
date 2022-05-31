@@ -30,7 +30,32 @@ class Gem extends Phaser.Physics.Arcade.Sprite {
             this.end = false;
             this.checking = false;
             this.ready = false;
+            this.lastAngle = null;
 
+            //delay 3 seconds then call move()
+            //this.scene.time.delayedCall(1000, this.move, [], this);
+            //this.move();
+
+
+
+
+    }
+
+    move(){
+        var targetAngle = Phaser.Math.Angle.Between(this.x,this.y, player.x,player.y);
+        if(this.lastAngle == null){
+            this.lastAngle = targetAngle;
+        }
+        targetAngle = Phaser.Math.Angle.RotateTo(this.lastAngle, targetAngle, 2.3);
+        this.lastAngle = targetAngle;
+        this.scene.physics.velocityFromRotation(targetAngle, 1200, this.body.acceleration);
+
+        this.scene.time.delayedCall(300, function(){
+            this.body.acceleration.x = 0;
+            this.body.acceleration.y = 0;
+        }, [], this);
+
+        this.scene.time.delayedCall(1000, this.move, [], this);
 
     }
 
@@ -54,6 +79,7 @@ class Gem extends Phaser.Physics.Arcade.Sprite {
             this.y = indi.y;
             this.body.velocity.x = indi.body.velocity.x;
             this.body.velocity.y = indi.body.velocity.y;
+            this.angle -= 1;
         }else{
             //this.body.setDrag(800);
             if(this.cooldown > 0){

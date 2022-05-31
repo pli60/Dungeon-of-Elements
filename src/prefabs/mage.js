@@ -136,6 +136,7 @@ class mage extends Phaser.Physics.Arcade.Sprite {
     switchWeapon(element) {
         this.weapon = element;
     }
+    
 
     update() {
         if(this.cd > 0){
