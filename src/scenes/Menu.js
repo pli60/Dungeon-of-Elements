@@ -34,6 +34,7 @@ class Menu extends Phaser.Scene {
             this.Text.setInteractive();
             this.input.on('gameobjectup', this.clicked, this);
     }
+    
     clicked(pointer, gameObject) {
                 //this.sound.play('select');
                 this.scene.start("playScene");
