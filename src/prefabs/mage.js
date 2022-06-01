@@ -158,6 +158,7 @@ class mage extends Phaser.Physics.Arcade.Sprite {
         }
         if (keyA.isDown) {
             player.setAccelerationX(-1500);
+            this.player.anims.play('player_move');
             //player.setAccelerationY(0);
 
             //test
@@ -166,6 +167,7 @@ class mage extends Phaser.Physics.Arcade.Sprite {
         }
         else if (keyD.isDown) {
             player.setAccelerationX(1500);
+            this.player.anims.play('player_move');
             ///player.setAccelerationY(0);
 
             //test
@@ -179,6 +181,7 @@ class mage extends Phaser.Physics.Arcade.Sprite {
 
         if (keyW.isDown) {
             player.setAccelerationY(-1500);
+            this.player.anims.play('player_move');
             //player.setAccelerationX(0);
 
             //test
@@ -186,6 +189,7 @@ class mage extends Phaser.Physics.Arcade.Sprite {
         }
         else if (keyS.isDown) {
             player.setAccelerationY(1500);
+            this.player.anims.play('player_move');
            // player.setAccelerationX(0);
 
             //test
