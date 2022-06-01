@@ -63,7 +63,7 @@ class Play extends Phaser.Scene {
 
     //spawn a test bullet
     spawnBullet (x, y, angle, element = 0, type = 0) {
-        var bullet = new BulletBase(this, x, y, elementSprites[element], 500, angle, type);
+        var bullet = new BulletBase(this, x, y, elementSprites[element], 500, angle, element);
         bullet.setDepth(2);
         
         

@@ -9,6 +9,10 @@ let config = {
                         debug: true
                 }
         },
+        scale: {
+                mode: Phaser.Scale.FIT,
+                autoCenter: Phaser.Scale.CENTER_BOTH
+            },
         //scene: [ Menu, Play ],
         scene: [ Menu, Play ],
         backgroundColor: 0xFF4F4F
