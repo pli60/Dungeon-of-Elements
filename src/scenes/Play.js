@@ -104,6 +104,20 @@ class Play extends Phaser.Scene {
 
     }
 
+    // spawnGemFromLoc(gemloc, element){
+    //     //check if name is water, fir or light
+    //     if (gemloc.name == 'water') {
+    //         this.spawnGem(gemloc.x, gemloc.y, 1);
+    //     }
+    //     else if (gemloc.name == 'fire') {
+    //         this.spawnGem(gemloc.x, gemloc.y, 2);
+    //     }
+    //     else if (gemLoc.name == 'light') {
+    //         this.spawnGem(gemloc.x, gemloc.y, 3);
+    //     }
+    //     this.spawnGem(gemloc.x, gemloc.y, element);
+    // }
+
     spawnGem(x, y, element = 0) {
         let gem = new Gem(this, x, y, element);
         //this.gemsGroup.add(gem);
@@ -126,10 +140,11 @@ class Play extends Phaser.Scene {
         //tilemap
         this.load.spritesheet("tilemap", "assets/map/tilemap.png", {
             frameWidth: 50,
-            frameHeight: 50
+             frameHeight: 50
         });
 
-        //this.load.tilemapTiledJSON("dungeon_map", "assets/map/dungeon.json");
+        this.load.tilemapTiledJSON("dungeon_map", "assets/map/dungeon1.json");
+        //this.load.image("tilemap", "assets/map/tilemap.png",);
 
         //this.load.spritesheet('player', 'assets/sprites/mage.png',
         //{ frameWidth: 64, frameHeight: 64 }
@@ -175,31 +190,8 @@ class Play extends Phaser.Scene {
     create() {
         this.gameOver = false;
         //world size
-        this.physics.world.setBounds(0, 0, 1024, 576);
+        this.physics.world.setBounds(0, 0, 10240, 5760);
         currScene = this;
-
-        // add a tile set to the map
-        // first parameter: the name we gave the tileset when we added it to Tiled
-        // second parameter: the key for the tile sheet we loaded above, in preload
-        // https://photonstorm.github.io/phaser3-docs/Phaser.Tilemaps.Tilemap.html#addTilesetImage__anchor
-        //const tileset = map.addTilesetImage("kenney_colored_packed", "1bit_tiles");
-        // create a new tilemap layer
-        // https://newdocs.phaser.io/docs/3.54.0/Phaser.Tilemaps.Tilemap#createLayer
-        //const worldLayer = map.createLayer("worldMap", tileset, 0, 0);
-        // //load map
-        // map = this.add.tilemap("dungeon_map");
-        // map.addTilesetImage("tilemap");
-        // groundLayer = map.createLayer("dungeon", tileset, 0, 0);
-
-        // groundLayer.setCollisionByProperty({ 
-        //     collides: true 
-        // });
-
-
-        //add tile map
-        this.add.tilemap("dungeon_map");
-        //const tileset = map.addTilesetImage("tilemap");
-        //const groundLayer = map.createLayer("dungeon", tileset, 0, 0);
 
         //animations
         this.anims.create({
@@ -285,12 +277,64 @@ class Play extends Phaser.Scene {
         this.gemsGroup.runChildUpdate = true;
         this.gemsGroup.active = true;
 
+        const map = this.add.tilemap("dungeon_map");
+        const tileset = map.addTilesetImage("tilemap");
+        const mainLayer = map.createLayer("dungeon", tileset, 0, 0);
+        //const objLayer = map.createLayer("Objects", tileset, 0, 0);
+        mainLayer.setCollisionByProperty({ 
+            collides: true
+        });
+
+        //generate gem from tile map
+        this.gemsLoc1 = map.createFromTiles(26, 1, {
+            name: "fire",
+            key: "tilemap",
+            frame: 25,
+            origin: (0,0)
+        })
+        
+        this.gemsLoc2 = map.createFromTiles(25, 1, {
+            name: "water",
+            key: "tilemap",
+            frame: 24,
+            origin: (0,0)
+        })
+        this.gemsLoc3 = map.createFromTiles(27, 1, {
+            name: "flight",
+            key: "tilemap",
+            frame: 26,
+            origin: (0,0)
+        })
+        this.gemLocGroup1 = this.add.group(this.gemsLoc1);
+        this.gemLocGroup1.getChildren().forEach(function(gemloc) {
+            this.spawnGem(gemloc.x+24, gemloc.y+24, 2);
+            gemloc.destroy();
+        }, this);
+        this.gemLocGroup2 = this.add.group(this.gemsLoc2);
+        this.gemLocGroup2.getChildren().forEach(function(gemloc) {
+            this.spawnGem(gemloc.x+24, gemloc.y+24, 1);
+            gemloc.destroy();
+        }, this);
+        this.gemLocGroup3 = this.add.group(this.gemsLoc3);
+        this.gemLocGroup3.getChildren().forEach(function(gemloc) {
+            this.spawnGem(gemloc.x+24, gemloc.y+24, 3);
+            gemloc.destroy();
+        }, this);
+
+        //add tile map
+        //this.add.tilemap("dungeon_map");
+        //const tileset = map.addTilesetImage("tilemap");
+        //const groundLayer = map.createLayer("dungeon", tileset, 0, 0);
+
         //{ classType: Bullet, runChildUpdate: true });
         //enemyBullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
 
         var background = this.add.image(0, 0, 'background');
         //var background =this.add.rectangle(0, 0, 1024, 576, 0x000000).setOrigin(0, 0);
         player = new mage(this, centerX, centerY, 'player');
+        player.setPosition(5608,4500)
+        this.physics.add.collider(player, mainLayer);
+        //this.physics.add.collider(player, objLayer);
         //player.anims.play('player_move');
         //player.anims.add('player_attack');
 
