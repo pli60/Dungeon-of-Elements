@@ -14,7 +14,8 @@ class Gem extends Phaser.Physics.Arcade.Sprite {
             this.body.setCollideWorldBounds(true);
             this.circle = this.scene.physics.add.sprite(this.x,this.y, 'circle').setVisible(false).setActive(false);
             this.magi = this.scene.physics.add.sprite(this.x,this.y, 'ball').setVisible(false).setActive(false).setScale(0.2);
-            
+            this.magi.sp = true;
+            this.magi.element = this.element;
             
 
             this.setOrigin(0.5, 0.5);
@@ -79,7 +80,7 @@ class Gem extends Phaser.Physics.Arcade.Sprite {
             this.y = indi.y;
             this.body.velocity.x = indi.body.velocity.x;
             this.body.velocity.y = indi.body.velocity.y;
-            this.angle -= 1;
+            this.angle += 1;
         }else{
             //this.body.setDrag(800);
             if(this.cooldown > 0){

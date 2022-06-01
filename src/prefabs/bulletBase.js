@@ -1,5 +1,5 @@
 class BulletBase extends Phaser.Physics.Arcade.Sprite {
-    constructor(scene,x,y,texture,velocity,angle,element = 0,type = 0,  sp = true) {
+    constructor(scene,x,y,texture,velocity,angle,element = 0,type = 0,  sp = false) {
             // call Phaser Physics Sprite constructor
             super(scene, x, y, texture);
             scene.add.existing(this);
