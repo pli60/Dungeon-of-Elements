@@ -68,10 +68,39 @@ class Play extends Phaser.Scene {
 
 
     }
-
-    spawnEnemy(x, y) {
+    spawnLevel() {
+        this.spawnEnemy(0, centerY,1,1);
+        this.spawnEnemy(1024, centerY,1,2);
+        this.spawnEnemy(1024, centerY-180,1,3);
+        this.spawnGem(900, centerY - 180, 3);
+        this.spawnGem(200, centerY - 180, 1);
+        this.spawnGem(900, centerY + 180, 2);
+        this.spawnGem(200, centerY + 180, 3);
+    }
+    spawnEnemy(x, y, element = 1, type = 1) {
         //let enemy = this.physics.add.sprite(x, y, 'player');
-        let enemy = new Enemy(this, x, y, 'fireskeleton', 0);
+        if (type == 1) {
+            let enemy = new Enemy(this, x, y, elements[element - 1] + enemyTypes[type - 1], element, type - 1);
+            enemy.setScale(0.6,0.6);
+            enemy.speed = 0.3;
+            enemy.health = 3;
+            enemy.AttackRange = 168;
+            enemy.body.setSize(50,50);
+        }
+        else if (type == 2) {
+            let enemy = new Enemy(this, x, y, elements[element - 1] + enemyTypes[type - 1], element, type - 1);
+            enemy.setScale(0.6,0.6);
+            enemy.body.setSize(50,70);
+        }
+        else if (type == 3) {
+            let enemy = new Enemy(this, x, y, elements[element - 1] + enemyTypes[type - 1], element, type - 1);
+            enemy.setScale(0.6,0.6);
+            enemy.body.setSize(80,120);
+            enemy.speedScale = 0.5;
+            enemy.speed = 0.2;
+            enemy.AttackRange = 220;
+            enemy.health = 13;
+        }
 
     }
 
@@ -88,13 +117,19 @@ class Play extends Phaser.Scene {
         }
     }
 
+    playerHit(enemy, player) {
+        player.hit(0);
+        enemy.hit(player);
+    }
+
     preload() {
         //tilemap
         this.load.spritesheet("tilemap", "assets/map/tilemap.png", {
             frameWidth: 50,
             frameHeight: 50
         });
-        this.load.tilemapTiledJSON("dungeon_map", "assets/map/dungeon.json");
+
+        //this.load.tilemapTiledJSON("dungeon_map", "assets/map/dungeon.json");
 
         //this.load.spritesheet('player', 'assets/sprites/mage.png',
         //{ frameWidth: 64, frameHeight: 64 }
@@ -143,6 +178,14 @@ class Play extends Phaser.Scene {
         this.physics.world.setBounds(0, 0, 1024, 576);
         currScene = this;
 
+        // add a tile set to the map
+        // first parameter: the name we gave the tileset when we added it to Tiled
+        // second parameter: the key for the tile sheet we loaded above, in preload
+        // https://photonstorm.github.io/phaser3-docs/Phaser.Tilemaps.Tilemap.html#addTilesetImage__anchor
+        //const tileset = map.addTilesetImage("kenney_colored_packed", "1bit_tiles");
+        // create a new tilemap layer
+        // https://newdocs.phaser.io/docs/3.54.0/Phaser.Tilemaps.Tilemap#createLayer
+        //const worldLayer = map.createLayer("worldMap", tileset, 0, 0);
         // //load map
         // map = this.add.tilemap("dungeon_map");
         // map.addTilesetImage("tilemap");
@@ -152,16 +195,27 @@ class Play extends Phaser.Scene {
         //     collides: true 
         // });
 
+
+        //add tile map
+        this.add.tilemap("dungeon_map");
+        //const tileset = map.addTilesetImage("tilemap");
+        //const groundLayer = map.createLayer("dungeon", tileset, 0, 0);
+
         //animations
         this.anims.create({
             key: 'player_move',
-            frames: this.anims.generateFrameNumbers('player', { start: 0, end: 4 }),
-            frameRate: 30,
+            frames: this.anims.generateFrameNumbers('player', { start: 0, end: 3 }),
+            frameRate: 6,
         });
         this.anims.create({
-            key: 'player_attack',
-            frames: this.anims.generateFrameNumbers('player', { start: 5, end: 9 }),
-            frameRate: 30,
+            key: 'player_attack1',
+            frames: this.anims.generateFrameNumbers('player', { start: 5, end: 7 }),
+            frameRate: 15,
+        });
+        this.anims.create({
+            key: 'player_attack2',
+            frames: this.anims.generateFrameNumbers('player', { start: 7, end: 9 }),
+            frameRate: 15,
         });
 
         this.anims.create({
@@ -237,8 +291,8 @@ class Play extends Phaser.Scene {
         var background = this.add.image(0, 0, 'background');
         //var background =this.add.rectangle(0, 0, 1024, 576, 0x000000).setOrigin(0, 0);
         player = new mage(this, centerX, centerY, 'player');
-        this.player.anims.add('player_move');
-        this.player.anims.add('player_attack');
+        //player.anims.play('player_move');
+        //player.anims.add('player_attack');
 
         reticle = this.physics.add.sprite(centerX, centerY, 'target');
         indi = this.physics.add.sprite(centerX, centerY, 'indicator');
@@ -268,6 +322,7 @@ class Play extends Phaser.Scene {
 
         this.spawnLevel();
         this.physics.add.collider(this.enemies, this.playerBullets, this.enemyHit);
+        this.physics.add.collider(this.enemies, player, this.playerHit);
 
         let menuConfig = {
             fontFamily: 'Impact',
@@ -284,14 +339,6 @@ class Play extends Phaser.Scene {
 
     }
 
-    spawnLevel() {
-        this.spawnEnemy(0, centerY);
-        this.spawnEnemy(1024, centerY);
-        this.spawnGem(900, centerY - 180, 3);
-        this.spawnGem(200, centerY - 180, 1);
-        this.spawnGem(900, centerY + 180, 2);
-        this.spawnGem(200, centerY + 180, 3);
-    }
 
 
     update(time, delta) {

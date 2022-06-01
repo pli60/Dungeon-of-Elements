@@ -36,6 +36,8 @@ let bullets = null;
 let time = 0;
 let currScene = null;
 let elementSprites = ['bullet','waterGem','fireGem','lightningGem']
+let elements = ['water','fire','lightning'];
+let enemyTypes = ['slime','ghost','skeleton'];
 // reserve keys
 let keySPACE, keyW, keyA, keyS, keyD, keyFIRE, keyESC;
 var cursors;

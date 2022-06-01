@@ -7,9 +7,9 @@ class mage extends Phaser.Physics.Arcade.Sprite {
         scene.physics.add.existing(this); 
         this.body.setDrag(800);
         this.activing = false;
-        this.setDepth(2)
+        this.setDepth(2);
         //this.sfxFire = scene.sound.add('sfx_fire') 
-
+        this.attacking = false;
         this.body.setMaxVelocity(300);
         //player utility variables
         this.speedCap = 300;
@@ -21,6 +21,9 @@ class mage extends Phaser.Physics.Arcade.Sprite {
         this.holdDuration = 0;
         this.charged = false;
         this.lockedGem = null;
+        this.takingHit = false;
+
+        this.health = 10;
 
         this.circle = this.scene.physics.add.sprite(this.x,this.y, 'circle').setVisible(false).setActive(false);
         this.arrow = this.scene.physics.add.sprite(this.x,this.y, 'arrow').setVisible(false).setActive(false).setOrigin(0.5,0.5).setScale(0.2);//.setAlpha(0.5);
@@ -36,6 +39,7 @@ class mage extends Phaser.Physics.Arcade.Sprite {
             if(this.cd == 0){
                 if(this.holding == false){
                     this.holding = true;
+                    player.anims.play('player_attack1');
                 }else{
                     if(this.charged){
                         this.tween.stop();
@@ -51,28 +55,33 @@ class mage extends Phaser.Physics.Arcade.Sprite {
         scene.input.on('pointerup', function (pointer, time, lastFired) {
             if (player.active === false)
                 return;
-            this.cd = 5;
-            if(true){
+
                 if(this.charged){
                     this.tween.stop();
                 }
                 //this.scene.cameras.main.zoom = 1;
                 this.checkCharge(false);
                 if(this.holding == true & this.activing == false){
+                    this.cd = 15;
                     //normal attack
+                    this.attacking = true;
+                    //delay 250
+                    this.scene.time.delayedCall(200, function(){
+                        this.attacking = false;
+                    }, [], this);
+                    player.anims.play('player_attack2');
                     if(this.charged == false){
-                        
                         this.scene.sound.play('shoot');
                         if(this.weapon == 0) {
                             var bullet = scene.spawnBullet(indi.x, indi.y, scene.aimAngle,this.weapon, 1);
                         }else{
                             var bullet = scene.spawnBullet(indi.x, indi.y, scene.aimAngle,this.weapon, 0);
-                            var bullet = scene.spawnBullet(indi.x, indi.y, scene.aimAngle+1,this.weapon, 0);
-                            var bullet = scene.spawnBullet(indi.x, indi.y, scene.aimAngle-1,this.weapon, 0);
+                            //var bullet = scene.spawnBullet(indi.x, indi.y, scene.aimAngle+1,this.weapon, 0);
+                            //var bullet = scene.spawnBullet(indi.x, indi.y, scene.aimAngle-1,this.weapon, 0);
                         }
                     //charged attack
                     }else{
-                        this.cd = 15;
+                        this.cd = 30;
                         if(this.weapon == 0){
                             //get gem
                             this.scene.gemsGroup.getChildren().forEach(this.getgem, this);
@@ -88,7 +97,7 @@ class mage extends Phaser.Physics.Arcade.Sprite {
                 this.holding = false;
                 //this.setScale(1);
                 this.holdDuration = 0;
-            }
+            
 
         }, this);
 
@@ -132,12 +141,39 @@ class mage extends Phaser.Physics.Arcade.Sprite {
         }
     }
 
+    hit(enemy){
+        if(this.takingHit == false){
+            this.tweenHit = this.scene.tweens.add({
+                    targets: this,
+                    alpha: 0,
+                    ease: 'Power2',
+                    duration: 100,
+                    yoyo: true,
+                    loop: 1,
+                });
+            var targetAngle = Phaser.Math.Angle.Between(enemy.x,enemy.y,this.x,this.y);
+            this.scene.physics.velocityFromRotation(targetAngle, 800, this.body.velocity);
+            this.health -= 1;
+            //this.stopped == true;
+            if(this.health <= 0){
+                this.die();
+            }else{
+                this.takingHit = true;
+                this.scene.time.delayedCall(400, function(){
+                    this.takingHit = false;
+                }, [], this);
+                
+            }
+        }
+    }
 
     switchWeapon(element) {
         this.weapon = element;
     }
     
-
+    die(){
+        player.setActive(false);
+    }
     update() {
         if(this.cd > 0){
             this.cd -= 1;
@@ -145,6 +181,7 @@ class mage extends Phaser.Physics.Arcade.Sprite {
         if(this.holding){
             //this.setScale(1.1);
             this.holdDuration += 1;
+            this.setMaxVelocity(200);
             if(this.holdDuration > 60 & this.holdDuration < 180){
                 this.circle.setVisible(true).setActive(true);
                 this.circle.scale = this.scene.lerp(0,3,this.holdDuration/180);
@@ -155,10 +192,14 @@ class mage extends Phaser.Physics.Arcade.Sprite {
                 
                 this.checkCharge(true);
             }
+        }else{
+            this.setMaxVelocity(300);
         }
         if (keyA.isDown) {
             player.setAccelerationX(-1500);
-            this.player.anims.play('player_move');
+            if(this.holding == false & this.attacking == false){
+                player.anims.play('player_move',true);
+            }
             //player.setAccelerationY(0);
 
             //test
@@ -167,7 +208,9 @@ class mage extends Phaser.Physics.Arcade.Sprite {
         }
         else if (keyD.isDown) {
             player.setAccelerationX(1500);
-            this.player.anims.play('player_move');
+            if(this.holding == false & this.attacking == false){
+                player.anims.play('player_move',true);
+            }
             ///player.setAccelerationY(0);
 
             //test
@@ -181,7 +224,9 @@ class mage extends Phaser.Physics.Arcade.Sprite {
 
         if (keyW.isDown) {
             player.setAccelerationY(-1500);
-            this.player.anims.play('player_move');
+            if(this.holding == false & this.attacking == false){
+                player.anims.play('player_move',true);
+            }
             //player.setAccelerationX(0);
 
             //test
@@ -189,7 +234,9 @@ class mage extends Phaser.Physics.Arcade.Sprite {
         }
         else if (keyS.isDown) {
             player.setAccelerationY(1500);
-            this.player.anims.play('player_move');
+            if(this.holding == false & this.attacking == false){
+                player.anims.play('player_move',true);
+            }
            // player.setAccelerationX(0);
 
             //test
@@ -197,12 +244,13 @@ class mage extends Phaser.Physics.Arcade.Sprite {
         }
         else {
             player.setAccelerationY(0);
+            //player.anims.play('player_move',true);
 
         }
-        if (Phaser.Input.Keyboard.JustDown(keySPACE)) {
-            //this.switchSize();
-            //this.scene.gemsGroup.getChildren().forEach(this.check, this);
-        }
+        // if (Phaser.Input.Keyboard.JustDown(keySPACE)) {
+        //     //this.switchSize();
+        //     //this.scene.gemsGroup.getChildren().forEach(this.check, this);
+        // }
 
         if(this.circle.active == true){
             this.circle.x = this.x;
@@ -213,9 +261,10 @@ class mage extends Phaser.Physics.Arcade.Sprite {
         if(this.playerRing.active == true){
             this.playerRing.x = this.x;
             this.playerRing.y = this.y;
-            this.playerRing.setRotation(this.scene.aimAngle);
+            // this.playerRing.setRotation(this.scene.aimAngle);
             this.playerRing.body.velocity.x = this.body.velocity.x;
             this.playerRing.body.velocity.y = this.body.velocity.y;
+            this.playerRing.angle -=0.3;
         }
         if(this.arrow.active == true){
             this.arrowVector = this.scene.offset(this.scene.aimAngle,128);
