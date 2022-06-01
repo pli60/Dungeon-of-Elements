@@ -1,81 +1,80 @@
 class Play extends Phaser.Scene {
     constructor() {
-            super("playScene");
-        }
+        super("playScene");
+    }
 
     //lerp helper function
     lerp(start, end, amt) {
-            return (1 - amt) * start + amt * end
+        return (1 - amt) * start + amt * end
     }
 
     //helper clamp function
-    clamp(min, max,num ){
-            return num < min ? min : num > max ? max : num;
+    clamp(min, max, num) {
+        return num < min ? min : num > max ? max : num;
     }
 
     //normalize vector
     normalize(vector) {
-            var len = Math.sqrt(vector.x * vector.x + vector.y * vector.y);
-            return {
-                x: vector.x / len,
-                y: vector.y / len
-            };
+        var len = Math.sqrt(vector.x * vector.x + vector.y * vector.y);
+        return {
+            x: vector.x / len,
+            y: vector.y / len
+        };
     }
 
     //calculate look at rotation
     lookAt(x, y) {
-            var angle = Math.atan2(y, x);
-            return angle;
+        var angle = Math.atan2(y, x);
+        return angle;
     }
 
     //helper absolute value function
     abs(num) {
-            return num < 0 ? -num : num;
+        return num < 0 ? -num : num;
     }
 
     //offset a point with an angle and distance
     offset(angle, distance) {
-            var x = distance * Math.cos(angle);
-            var y = distance * Math.sin(angle);
-            return {
-                x: x,
-                y: y
-            };
+        var x = distance * Math.cos(angle);
+        var y = distance * Math.sin(angle);
+        return {
+            x: x,
+            y: y
+        };
     }
 
     //code from example
-    constrainReticle(reticle)
-    {
-        var distX = reticle.x-player.x;
-        var distY = reticle.y-player.y;
+    constrainReticle(reticle) {
+        var distX = reticle.x - player.x;
+        var distY = reticle.y - player.y;
 
         // Ensures reticle cannot be moved offscreen
         if (distX > 512)
-            reticle.x = player.x+512;
+            reticle.x = player.x + 512;
         else if (distX < -512)
-            reticle.x = player.x-512;
+            reticle.x = player.x - 512;
 
         if (distY > 288)
-            reticle.y = player.y+288;
+            reticle.y = player.y + 288;
         else if (distY < -288)
-            reticle.y = player.y-288;
+            reticle.y = player.y - 288;
     }
 
     //spawn a test bullet
-    spawnBullet (x, y, angle, element = 0, type = 0) {
+    spawnBullet(x, y, angle, element = 0, type = 0) {
         var bullet = new BulletBase(this, x, y, elementSprites[element], 500, angle, type);
         bullet.setDepth(2);
-        
-        
+
+
     }
 
     spawnEnemy(x, y) {
         //let enemy = this.physics.add.sprite(x, y, 'player');
-        let enemy = new Enemy(this, x, y, 'player', 0);
+        let enemy = new Enemy(this, x, y, 'fireskeleton', 0);
 
     }
 
-    spawnGem(x,y,element = 0){
+    spawnGem(x, y, element = 0) {
         let gem = new Gem(this, x, y, element);
         //this.gemsGroup.add(gem);
     }
@@ -83,24 +82,40 @@ class Play extends Phaser.Scene {
     enemyHit(enemy, bullet) {
         enemy.hit(bullet.element);
         //currScene.spawnEnemy(enemy.x, Phaser.Math.Between(centerY - 288, centerY + 288));
-        if(bullet.name == 'bullet'){
+        if (bullet.name == 'bullet') {
             bullet.hit();
         }
     }
 
-    preload ()
-    {
+    preload() {
+        //tilemap
+        this.load.spritesheet("tilemap", "assets/map/tilemap.png", {
+            frameWidth: 50,
+            frameHeight: 50
+        });
+        this.load.tilemapTiledJSON("dungeon_map", "assets/map/dungeon.json");
+
         //this.load.spritesheet('player', 'assets/sprites/mage.png',
-            //{ frameWidth: 64, frameHeight: 64 }
+        //{ frameWidth: 64, frameHeight: 64 }
         //);
-        
+
         //main asset
-        this.load.image('player', 'assets/sprites/mage.png');
+        this.load.spritesheet('player', 'assets/sprites/mage_all.png', { frameWidth: 100, frameHeight: 100, startFrame: 0, endFrame: 9 });
         this.load.image('background', 'assets/grass.png');
         this.load.image('target', 'assets/sprites/cross.png');
         this.load.image('indicator', 'assets/sprites/ball.png');
 
         //enemies
+        this.load.spritesheet('fireghost', 'assets/sprites/fireghost.png', { frameWidth: 100, frameHeight: 100, startFrame: 0, endFrame: 4 });
+        this.load.spritesheet('lightningghost', 'assets/sprites/lightningghost.png', { frameWidth: 100, frameHeight: 100, startFrame: 0, endFrame: 4 });
+        this.load.spritesheet('waterghost', 'assets/sprites/waterghost.png', { frameWidth: 100, frameHeight: 100, startFrame: 0, endFrame: 4 });
+        this.load.spritesheet('fireslime', 'assets/sprites/fireslime.png', { frameWidth: 50, frameHeight: 50, startFrame: 0, endFrame: 11 });
+        this.load.spritesheet('lightningslime', 'assets/sprites/lightningslime.png', { frameWidth: 50, frameHeight: 50, startFrame: 0, endFrame: 11 });
+        this.load.spritesheet('waterslime', 'assets/sprites/waterslime.png', { frameWidth: 50, frameHeight: 50, startFrame: 0, endFrame: 11 });
+        this.load.spritesheet('fireskeleton', 'assets/sprites/fireskeleton.png', { frameWidth: 150, frameHeight: 200, startFrame: 0, endFrame: 4 });
+        this.load.spritesheet('waterskeleton', 'assets/sprites/waterskeleton.png', { frameWidth: 150, frameHeight: 200, startFrame: 0, endFrame: 4 });
+        this.load.spritesheet('lightningskeleton', 'assets/sprites/lightningskeleton.png', { frameWidth: 150, frameHeight: 200, startFrame: 0, endFrame: 4 });
+
 
         //objects
         this.load.image('bullet', 'assets/sprites/ball.png');
@@ -118,16 +133,90 @@ class Play extends Phaser.Scene {
 
         //audio
         this.load.audio('shoot', 'assets/shoot.wav');
-        
+
     }
 
-    create ()
-    {
+    create() {
+        this.gameOver = false;
         //world size
         this.physics.world.setBounds(0, 0, 1024, 576);
         currScene = this;
 
+        // //load map
+        // map = this.add.tilemap("dungeon_map");
+        // map.addTilesetImage("tilemap");
+        // groundLayer = map.createLayer("dungeon", tileset, 0, 0);
 
+        // groundLayer.setCollisionByProperty({ 
+        //     collides: true 
+        // });
+
+        //animations
+        this.anims.create({
+            key: 'player_move',
+            frames: this.anims.generateFrameNumbers('player', { start: 0, end: 4 }),
+            frameRate: 30,
+        });
+        this.anims.create({
+            key: 'player_attack',
+            frames: this.anims.generateFrameNumbers('player', { start: 5, end: 9 }),
+            frameRate: 30,
+        });
+
+        this.anims.create({
+            key: 'a_fireghost',
+            frames: this.anims.generateFrameNumbers('fireghost', { start: 0, end: 4 }),
+            frameRate: 30,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'a_waterghost',
+            frames: this.anims.generateFrameNumbers('waterghost', { start: 0, end: 4 }),
+            frameRate: 30,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'a_lightningghost',
+            frames: this.anims.generateFrameNumbers('lightningghost', { start: 0, end: 4 }),
+            frameRate: 30,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'a_fireslime',
+            frames: this.anims.generateFrameNumbers('fireslime', { start: 0, end: 11 }),
+            frameRate: 30,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'a_waterslime',
+            frames: this.anims.generateFrameNumbers('waterslime', { start: 0, end: 11 }),
+            frameRate: 30,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'a_lightningslime',
+            frames: this.anims.generateFrameNumbers('lightningslime', { start: 0, end: 11 }),
+            frameRate: 30,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'a_fireskeleton',
+            frames: this.anims.generateFrameNumbers('fireskeleton', { start: 0, end: 4 }),
+            frameRate: 30,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'a_waterskeleton',
+            frames: this.anims.generateFrameNumbers('waterskeleton', { start: 0, end: 4 }),
+            frameRate: 30,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'a_lightningskeleton',
+            frames: this.anims.generateFrameNumbers('lightningskeleton', { start: 0, end: 4 }),
+            frameRate: 30,
+            repeat: -1
+        });
 
         this.enemies = this.physics.add.group()
         this.enemies.runChildUpdate = true;
@@ -140,23 +229,26 @@ class Play extends Phaser.Scene {
         this.gemsGroup = this.physics.add.group()
         this.gemsGroup.runChildUpdate = true;
         this.gemsGroup.active = true;
-        
+
         //{ classType: Bullet, runChildUpdate: true });
         //enemyBullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
 
         var background = this.add.image(0, 0, 'background');
         //var background =this.add.rectangle(0, 0, 1024, 576, 0x000000).setOrigin(0, 0);
         player = new mage(this, centerX, centerY, 'player');
-        reticle = this.physics.add.sprite(centerX,centerY, 'target');
-        indi = this.physics.add.sprite(centerX,centerY, 'indicator');
+        this.player.anims.add('player_move');
+        this.player.anims.add('player_attack');
 
+        reticle = this.physics.add.sprite(centerX, centerY, 'target');
+        indi = this.physics.add.sprite(centerX, centerY, 'indicator');
+        // this.physics.add.collider(this.p1, groundLayer);
 
 
         background.setOrigin(0, 0)
         //player.setOrigin(0.5, 0.5).setDisplaySize(64, 64).setCollideWorldBounds(true).setDrag(1500, 1500);
         reticle.setOrigin(0.5, 0.5).setDisplaySize(25, 25).setCollideWorldBounds(true);
         indi.setOrigin(0.5, 0.5).setSize(32, 32).setDisplaySize(32, 32).setCollideWorldBounds(false);
-        
+
         //this.cameras.main.zoom = 1;
         keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
         keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
@@ -187,22 +279,21 @@ class Play extends Phaser.Scene {
             },
             fixedWidth: 0
         }
-        this.Text = this.add.text(game.config.width/2, game.config.height/5 * 3, 'long HOLD <mouse buttons> to pick gems', menuConfig).setOrigin(0.5);
+        this.Text = this.add.text(game.config.width / 2, game.config.height / 5 * 3, 'long HOLD <mouse buttons> to pick gems', menuConfig).setOrigin(0.5);
 
     }
 
-    spawnLevel(){
+    spawnLevel() {
         this.spawnEnemy(0, centerY);
         this.spawnEnemy(1024, centerY);
-        this.spawnGem(900, centerY-180,3);
-        this.spawnGem(200, centerY-180,1);
-        this.spawnGem(900, centerY+180,2);
-        this.spawnGem(200, centerY+180,3);
+        this.spawnGem(900, centerY - 180, 3);
+        this.spawnGem(200, centerY - 180, 1);
+        this.spawnGem(900, centerY + 180, 2);
+        this.spawnGem(200, centerY + 180, 3);
     }
 
 
-    update (time, delta)
-    {
+    update(time, delta) {
         player.update();
 
         this.aimAngle = Phaser.Math.Angle.Between(player.x, player.y, reticle.x, reticle.y);
@@ -213,13 +304,13 @@ class Play extends Phaser.Scene {
         indi.y = player.y + this.indiVector.y;
 
 
-         if (keyESC.justDown) {
-            if (game.input.mouse.locked){
+        if (keyESC.justDown) {
+            if (game.input.mouse.locked) {
                 game.input.mouse.releasePointerLock();
             }
         }
         //this.physics.add.collider(this.enemies, this.playerBullets, this.enemyHit);
-        
+
         //player.setAccelerationX(this.speed);
 
         //this.physics.world.collide(this.enemies, this.playerBullets, this.DinoCollision, null, this);
@@ -228,11 +319,11 @@ class Play extends Phaser.Scene {
         reticle.body.velocity.x = player.body.velocity.x;
         reticle.body.velocity.y = player.body.velocity.y;
 
-        
+
         this.constrainReticle(reticle);
 
 
-        
+
         // if(this.zooming){
         //     this.cameras.main.zoom = this.lerp(this.currentZoom,this.zoomTarget,(this.zoomSpeed*delta)/1000);
         // }else{
