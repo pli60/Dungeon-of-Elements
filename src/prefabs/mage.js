@@ -30,6 +30,8 @@ class mage extends Phaser.Physics.Arcade.Sprite {
         this.playerRing = this.scene.physics.add.sprite(centerX,centerY, 'highlight').setScale(0.6).setDepth(1);
         this.weapon = 0;
 
+        this.body.setSize(72,72);
+        //this.body.setSize(72,72);
         this.setOrigin(0.5, 0.5).setDisplaySize(64, 64).setCollideWorldBounds(true).setDrag(1500, 1500);
 
 
@@ -55,7 +57,8 @@ class mage extends Phaser.Physics.Arcade.Sprite {
         scene.input.on('pointerup', function (pointer, time, lastFired) {
             if (player.active === false)
                 return;
-
+                //print player position to console log
+                console.log('x:'+ this.x + '   y:' + this.y);
                 if(this.charged){
                     this.tween.stop();
                 }

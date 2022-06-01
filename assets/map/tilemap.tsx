@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tileset version="1.8" tiledversion="1.8.5" name="tilemap" tilewidth="50" tileheight="50" tilecount="100" columns="10">
- <image source="../tilemap.png" width="500" height="500"/>
+ <image source="tilemap.png" width="500" height="500"/>
  <tile id="0">
   <properties>
    <property name="collides" type="bool" value="false"/>
