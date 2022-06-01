@@ -14,7 +14,7 @@ class Gem extends Phaser.Physics.Arcade.Sprite {
             this.body.setCollideWorldBounds(true);
             this.circle = this.scene.physics.add.sprite(this.x,this.y, 'circle').setVisible(false).setActive(false);
             this.magi = this.scene.physics.add.sprite(this.x,this.y, 'ball').setVisible(false).setActive(false).setScale(0.2);
-            scene.playerBullets.add(this.magi);
+            
             
 
             this.setOrigin(0.5, 0.5);
@@ -92,6 +92,7 @@ class Gem extends Phaser.Physics.Arcade.Sprite {
             }
             if(this.checking){
                 this.showCircle();
+                this.angle -= 1;
                 if(Phaser.Math.Distance.BetweenPoints(this, player) < 300){
                     var dist = Phaser.Math.Distance.BetweenPoints(this, reticle);
                     if(dist < 64){
@@ -176,6 +177,7 @@ class Gem extends Phaser.Physics.Arcade.Sprite {
         this.magi.active = true;
         this.magi.visible = true;
         this.magi.setScale(0.2);
+        this.scene.playerBullets.add(this.magi);
         //this.scene.playerBullets.add(this.magi);
         //this.scene.playerBullets.add(this);
         //delay call 3000
@@ -197,10 +199,12 @@ class Gem extends Phaser.Physics.Arcade.Sprite {
         }, [], this);
         //delay 260
         this.scene.time.delayedCall(1300, function(){
+            this.scene.playerBullets.remove(this.magi);
             this.magi.visible = false;
             this.magi.body.velocity.x = 0;
             this.magi.body.velocity.y = 0;
             this.magi.active = false;
+            
             //this.magi.setScale(0.2);
         }, [], this);
         //this.body.velocity.x = 100;
