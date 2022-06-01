@@ -1,10 +1,11 @@
 class BulletBase extends Phaser.Physics.Arcade.Sprite {
-    constructor(scene,x,y,texture,velocity,angle,type = 0, element = 0, sp = true) {
+    constructor(scene,x,y,texture,velocity,angle,element = 0,type = 0,  sp = true) {
             // call Phaser Physics Sprite constructor
             super(scene, x, y, texture);
             scene.add.existing(this);
             scene.playerBullets.add(this);
             this.name = 'bullet';
+            this.element = element;
 
             //this.body.setDrag(800);
             this.setOrigin(0.5, 0.5);
@@ -18,7 +19,7 @@ class BulletBase extends Phaser.Physics.Arcade.Sprite {
                 this.setSize(32, 32).setDisplaySize(32, 32);
             }
             else{
-                this.setSize(64, 64).setDisplaySize(64, 64);
+                this.setSize(32, 32).setDisplaySize(32, 32);
             }
             scene.time.delayedCall(1500, () => {
                 this.die();
