@@ -85,7 +85,7 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
     }
     
 
-    hit(element = 0){
+    hit(element = 0, sp = false){
         if(this.state != 4){
             if(this.takingHit == false){
                 this.floatmoving = false;
@@ -94,9 +94,9 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
                 }
                 this.tweenHit = this.scene.tweens.add({
                         targets: this,
-                        alpha: 0,
+                        alpha: 100,
                         ease: 'Power2',
-                        duration: 150,
+                        duration: 125,
                         yoyo: true,
                         loop: 0,
                     });
@@ -106,6 +106,10 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
                     if(element % 3 + 1 == this.element){
                         damage = 3;
                     }
+                }
+                if(sp){
+                    console.log('SP!')
+                    damage *= 2;
                 }
                 var targetAngle = Phaser.Math.Angle.Between(player.x,player.y,this.x,this.y);
                 this.scene.physics.velocityFromRotation(targetAngle, 150 * damage, this.body.velocity);
@@ -241,7 +245,7 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
                 this.velocity = (0,0);
             }
         }
-        if(this.floatmoving == true & this.type!=0){
+        if(this.floatmoving == true & this.type!=0 & this.state != 0){
             var targetAngle = Phaser.Math.Angle.Between(this.x,this.y, indi.x,indi.y);
             //targetAngle = Phaser.Math.DegToRad(this.targetAngle);
             var targetAcc = this.scene.physics.velocityFromRotation(targetAngle, 6 * this.speedScale);

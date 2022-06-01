@@ -9,6 +9,9 @@ class Menu extends Phaser.Scene {
 
             // load menu background
             //this.load.image('menu', './assets/dinomenu.png');
+            this.load.image('play1', './assets/PLAY.png');
+            this.load.image('play2', './assets/PLAY2.png');
+
     }
 
     create() {
@@ -31,13 +34,29 @@ class Menu extends Phaser.Scene {
                     fixedWidth: 0
                 }
             this.Text = this.add.text(game.config.width/2, game.config.height/3 * 2, '[Click here to start]', menuConfig).setOrigin(0.5);
+            this.button = this.add.sprite(game.config.width/2, game.config.height/3 * 2, 'play1').setOrigin(0.5).setScale(2);
             this.Text.setInteractive();
+            this.button.setInteractive();
             this.input.on('gameobjectup', this.clicked, this);
+            this.input.on('gameobjectdown', function(pointer,object){
+                this.button.setScale(1.8);
+            }, this);
+            this.button.on('pointerover',function(pointer,object){
+                this.button.setTexture('play2');
+            },this)
+            
+            this.button.on('pointerout',function(pointer,object){
+                this.button.setTexture('play1');
+            },this)
     }
-    
+
+
     clicked(pointer, gameObject) {
                 //this.sound.play('select');
-                this.scene.start("playScene");
+                this.button.setScale(2);
+                this.time.delayedCall(100, function(){
+                        this.scene.start("playScene");
+                    }, [], this);
         }
 
     update() {
@@ -48,6 +67,8 @@ class Menu extends Phaser.Scene {
                     //this.sound.play('select');
                     this.scene.start('playScene');
             }
+
+        
     }
 
 }

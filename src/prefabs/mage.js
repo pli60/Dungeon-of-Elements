@@ -58,7 +58,7 @@ class mage extends Phaser.Physics.Arcade.Sprite {
             if (player.active === false)
                 return;
                 //print player position to console log
-                console.log('x:'+ this.x + '   y:' + this.y);
+                //console.log('x:'+ this.x + '   y:' + this.y);
                 if(this.charged){
                     this.tween.stop();
                 }
@@ -155,13 +155,14 @@ class mage extends Phaser.Physics.Arcade.Sprite {
                     loop: 1,
                 });
             var targetAngle = Phaser.Math.Angle.Between(enemy.x,enemy.y,this.x,this.y);
-            this.scene.physics.velocityFromRotation(targetAngle, 800, this.body.velocity);
+            
             this.health -= 1;
             //this.stopped == true;
             if(this.health <= 0){
                 this.die();
             }else{
                 this.takingHit = true;
+                this.scene.physics.velocityFromRotation(targetAngle, 800, this.body.velocity);
                 this.scene.time.delayedCall(400, function(){
                     this.takingHit = false;
                 }, [], this);
@@ -176,6 +177,7 @@ class mage extends Phaser.Physics.Arcade.Sprite {
     
     die(){
         player.setActive(false);
+        this.scene.gameover();
     }
     update() {
         if(this.cd > 0){
