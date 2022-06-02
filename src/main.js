@@ -17,8 +17,8 @@ let config = {
                 autoCenter: Phaser.Scale.CENTER_BOTH
             },
         //scene: [ Menu, Play ],
-        scene: [ Menu, Play ],
-        backgroundColor: 0xFF4F4F
+        scene: [ Menu, Play, Gameover ],
+        backgroundColor: 0x739CD3
 }
 
 let game = new Phaser.Game(config);
@@ -38,6 +38,17 @@ let currScene = null;
 let elementSprites = ['bullet','waterGem','fireGem','lightningGem']
 let elements = ['water','fire','lightning'];
 let enemyTypes = ['slime','ghost','skeleton'];
+let menuConfig = {
+        fontFamily: 'Impact',
+        fontSize: '28px',
+        color: '#000000',
+        align: 'center',
+        padding: {
+            top: 5,
+            bottom: 5,
+        },
+        fixedWidth: 0
+    }
 // reserve keys
 let keySPACE, keyW, keyA, keyS, keyD, keyFIRE, keyESC;
 var cursors;

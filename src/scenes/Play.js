@@ -61,7 +61,7 @@ class Play extends Phaser.Scene {
     }
 
     //spawn a test bullet
-    spawnBullet (x, y, angle, element = 0, type = 0) {
+    spawnBullet(x, y, angle, element = 0, type = 0) {
         var bullet = new BulletBase(this, x, y, elementSprites[element], 500, angle, element);
 
         bullet.setDepth(2);
@@ -82,22 +82,22 @@ class Play extends Phaser.Scene {
         //randome between 1 and 3 integers
         if (type == 1) {
             let enemy = new Enemy(this, x, y, elements[element - 1] + enemyTypes[type - 1], element, type - 1);
-            enemy.setScale(0.6,0.6);
+            enemy.setScale(0.6, 0.6);
             enemy.speed = 0.3;
             enemy.health = 3;
             enemy.AttackRange = 168;
-            enemy.body.setSize(50,50);
+            enemy.body.setSize(50, 50);
             this.physics.add.collider(enemy, this.mainLayer);
         }
         else if (type == 2) {
             let enemy = new Enemy(this, x, y, elements[element - 1] + enemyTypes[type - 1], element, type - 1);
-            enemy.setScale(0.6,0.6);
-            enemy.body.setSize(50,70);
+            enemy.setScale(0.6, 0.6);
+            enemy.body.setSize(50, 70);
         }
         else if (type == 3) {
             let enemy = new Enemy(this, x, y, elements[element - 1] + enemyTypes[type - 1], element, type - 1);
-            enemy.setScale(0.6,0.6);
-            enemy.body.setSize(80,120);
+            enemy.setScale(0.6, 0.6);
+            enemy.body.setSize(80, 120);
             enemy.speedScale = 0.5;
             enemy.speed = 0.2;
             enemy.AttackRange = 220;
@@ -126,7 +126,7 @@ class Play extends Phaser.Scene {
     }
 
     enemyHit(enemy, bullet) {
-        enemy.hit(bullet.element,bullet.sp);
+        enemy.hit(bullet.element, bullet.sp);
         //currScene.spawnEnemy(enemy.x, Phaser.Math.Between(centerY - 288, centerY + 288));
         if (bullet.name == 'bullet') {
             bullet.hit();
@@ -142,7 +142,7 @@ class Play extends Phaser.Scene {
         //tilemap
         this.load.spritesheet("tilemap", "assets/map/tilemap.png", {
             frameWidth: 50,
-             frameHeight: 50
+            frameHeight: 50
         });
 
         this.load.tilemapTiledJSON("dungeon_map", "assets/map/dungeon1.json");
@@ -154,9 +154,10 @@ class Play extends Phaser.Scene {
 
         //main asset
         this.load.spritesheet('player', 'assets/sprites/mage_all.png', { frameWidth: 100, frameHeight: 100, startFrame: 0, endFrame: 9 });
-        this.load.image('background', 'assets/grass.png');
         this.load.image('target', 'assets/sprites/cross.png');
         this.load.image('indicator', 'assets/sprites/ball.png');
+        this.load.image('menu1', './assets/MENU.png');
+        this.load.image('menu2', './assets/MENU2.png');
 
         //enemies
         this.load.spritesheet('fireghost', 'assets/sprites/fireghost.png', { frameWidth: 100, frameHeight: 100, startFrame: 0, endFrame: 4 });
@@ -186,11 +187,30 @@ class Play extends Phaser.Scene {
 
         //audio
         this.load.audio('shoot', 'assets/audio/shoot.wav');
+        this.load.audio('bgm', './assets/audio/bgm.mp3');
+        this.load.audio('walking', './assets/audio/walking.wav');
+        this.load.audio('lose', './assets/audio/lose.wav');
+        this.load.audio('win', './assets/audio/win.wav');
+        this.load.audio('playerdeath', './assets/audio/death2.wav');
 
     }
 
     create() {
-        this.gameOver = false;
+        // play bgm
+        this.bgm = this.sound.add('bgm', {
+            mute: false,
+            volume: 0.3,
+            rate: 1,
+            loop: true
+        });
+        this.bgm.play();
+
+        this.walking = this.sound.add('walking', {
+            volume: 0.8,
+            rate: 0.5,
+            loop: true
+        });
+
         //world size
         this.physics.world.setBounds(0, 0, 10240, 5760);
         currScene = this;
@@ -284,7 +304,7 @@ class Play extends Phaser.Scene {
         const mainLayer = map.createLayer("dungeon", tileset, 0, 0);
         this.mainLayer = mainLayer;
         //const objLayer = map.createLayer("Objects", tileset, 0, 0);
-        mainLayer.setCollisionByProperty({ 
+        mainLayer.setCollisionByProperty({
             collides: true
         });
 
@@ -292,33 +312,33 @@ class Play extends Phaser.Scene {
         this.gemsLoc1 = map.createFromTiles(26, 1, {
             key: "tilemap",
             frame: 25,
-            origin: (0,0)
+            origin: (0, 0)
         })
-        
+
         this.gemsLoc2 = map.createFromTiles(25, 1, {
             key: "tilemap",
             frame: 24,
-            origin: (0,0)
+            origin: (0, 0)
         })
         this.gemsLoc3 = map.createFromTiles(27, 1, {
             key: "tilemap",
             frame: 26,
-            origin: (0,0)
+            origin: (0, 0)
         })
         this.gemLocGroup1 = this.add.group(this.gemsLoc1);
-        this.gemLocGroup1.children.each(function(gemloc) {
+        this.gemLocGroup1.children.each(function (gemloc) {
             //console.log(gemloc.element)
-            this.spawnGem(gemloc.x+24, gemloc.y+24, 2);
+            this.spawnGem(gemloc.x + 24, gemloc.y + 24, 2);
             gemloc.destroy();
         }, this);
         this.gemLocGroup2 = this.add.group(this.gemsLoc2);
-        this.gemLocGroup2.children.each(function(gemloc) {
-            this.spawnGem(gemloc.x+24, gemloc.y+24, 1);
+        this.gemLocGroup2.children.each(function (gemloc) {
+            this.spawnGem(gemloc.x + 24, gemloc.y + 24, 1);
             gemloc.destroy();
         }, this);
         this.gemLocGroup3 = this.add.group(this.gemsLoc3);
-        this.gemLocGroup3.children.each(function(gemloc) {
-            this.spawnGem(gemloc.x+24, gemloc.y+24, 3);
+        this.gemLocGroup3.children.each(function (gemloc) {
+            this.spawnGem(gemloc.x + 24, gemloc.y + 24, 3);
             gemloc.destroy();
         }, this);
 
@@ -328,69 +348,69 @@ class Play extends Phaser.Scene {
         this.enemyLoc = map.createFromTiles(12, 2, {
             name: "enemy",
             //texture: 'magi2',
-            origin: (0,0)
+            origin: (0, 0)
         })
         this.enemyLocGroup = this.add.group(this.enemyLoc);
-        this.enemyLocGroup.children.each(function(enemyloc) {
+        this.enemyLocGroup.children.each(function (enemyloc) {
             enemyloc.destroy();
         }, this);
 
         this.enemyLoc1 = map.createFromTiles(42, 2, {
             name: "enemy1",
-            origin: (0.5,0.5)
+            origin: (0.5, 0.5)
         })
-        
+
 
         this.enemyLoc2 = map.createFromTiles(43, 2, {
             name: "enemy2",
-            origin: (0.5,0.5)
+            origin: (0.5, 0.5)
         })
 
         this.enemyLoc3 = map.createFromTiles(44, 2, {
             name: "enemy3",
-            origin: (0.5,0.5)
+            origin: (0.5, 0.5)
         })
 
         this.enemySpawnLoc = map.createFromTiles(13, 2, {
             name: "enemySpawn",
             texture: 'magi2',
-            origin: (0.5,0.5)
+            origin: (0.5, 0.5)
         })
 
 
 
         this.enemySpawnLocGroup = this.add.group(this.enemySpawnLoc);
-        this.enemySpawnLocGroup.children.each(function(enemySpawnLoc) {
+        this.enemySpawnLocGroup.children.each(function (enemySpawnLoc) {
             enemySpawnLoc.setTexture('magi1');
             enemySpawnLoc.setScale(0.2);
-            this.spawnEnemy(enemySpawnLoc.x+24, enemySpawnLoc.y+24, Phaser.Math.Between(1, 3),Phaser.Math.Between(1, 3));
+            this.spawnEnemy(enemySpawnLoc.x + 24, enemySpawnLoc.y + 24, Phaser.Math.Between(1, 3), Phaser.Math.Between(1, 3));
             enemySpawnLoc.destroy();
         }, this);
 
 
         this.enemyLocGroup1 = this.add.group(this.enemyLoc1);
-        this.enemyLocGroup1.children.each(function(enemyLoc) {
+        this.enemyLocGroup1.children.each(function (enemyLoc) {
             //enemyLoc.setTexture('magi2');
             //enemyLoc.setScale(0.2);
-            this.spawnEnemy(enemyLoc.x+24, enemyLoc.y, Phaser.Math.Between(1, 3),1);
-            this.spawnEnemy(enemyLoc.x, enemyLoc.y+24, Phaser.Math.Between(1, 3),1);
-            this.spawnEnemy(enemyLoc.x+24, enemyLoc.y+24, Phaser.Math.Between(1, 3),1);
+            this.spawnEnemy(enemyLoc.x + 24, enemyLoc.y, Phaser.Math.Between(1, 3), 1);
+            this.spawnEnemy(enemyLoc.x, enemyLoc.y + 24, Phaser.Math.Between(1, 3), 1);
+            this.spawnEnemy(enemyLoc.x + 24, enemyLoc.y + 24, Phaser.Math.Between(1, 3), 1);
             enemyLoc.destroy();
         }, this);
 
         this.enemyLocGroup2 = this.add.group(this.enemyLoc2);
-        this.enemyLocGroup2.children.each(function(enemyLoc) {
+        this.enemyLocGroup2.children.each(function (enemyLoc) {
             // enemyLoc.setTexture('magi1');
             // enemyLoc.setScale(0.2);
-            this.spawnEnemy(enemyLoc.x+24, enemyLoc.y+24, Phaser.Math.Between(1, 3),2);
+            this.spawnEnemy(enemyLoc.x + 24, enemyLoc.y + 24, Phaser.Math.Between(1, 3), 2);
             enemyLoc.destroy();
         }, this);
 
         this.enemyLocGroup3 = this.add.group(this.enemyLoc3);
-        this.enemyLocGroup3.children.each(function(enemyLoc) {
+        this.enemyLocGroup3.children.each(function (enemyLoc) {
             //enemyLoc.setTexture('magi2');
             //enemyLoc.setScale(0.2);
-            this.spawnEnemy(enemyLoc.x+24, enemyLoc.y+24, Phaser.Math.Between(1, 3), 3);
+            this.spawnEnemy(enemyLoc.x + 24, enemyLoc.y + 24, Phaser.Math.Between(1, 3), 3);
             enemyLoc.destroy();
         }, this);
         //add tile map
@@ -401,10 +421,10 @@ class Play extends Phaser.Scene {
         //{ classType: Bullet, runChildUpdate: true });
         //enemyBullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
         this.end = false;
-        var background = this.add.image(0, 0, 'background');
+        // var background = this.add.image(0, 0, 'background');
         //var background =this.add.rectangle(0, 0, 1024, 576, 0x000000).setOrigin(0, 0);
         player = new mage(this, centerX, centerY, 'player');
-        player.setPosition(5608,4500)
+        player.setPosition(5608, 4500)
         this.physics.add.collider(player, mainLayer);
         //this.physics.add.collider(player, objLayer);
         //player.anims.play('player_move');
@@ -415,7 +435,7 @@ class Play extends Phaser.Scene {
         // this.physics.add.collider(this.p1, groundLayer);
 
 
-        background.setOrigin(0, 0)
+        // background.setOrigin(0, 0)
         //player.setOrigin(0.5, 0.5).setDisplaySize(64, 64).setCollideWorldBounds(true).setDrag(1500, 1500);
         reticle.setOrigin(0.5, 0.5).setDisplaySize(25, 25).setCollideWorldBounds(true);
         indi.setOrigin(0.5, 0.5).setSize(32, 32).setDisplaySize(32, 32).setCollideWorldBounds(false);
@@ -453,43 +473,70 @@ class Play extends Phaser.Scene {
         }
         this.Text = this.add.text(game.config.width / 2, game.config.height / 5 * 3, 'long HOLD <mouse buttons> to pick gems', menuConfig).setOrigin(0.5);
 
+        // this.button = this.add.sprite(game.config.width / 2, game.config.height / 3 * 2, 'play1').setOrigin(0.5).setScale(2);
+        // this.button.setInteractive();
+        // this.input.on('gameobjectup', this.gomenu, this);
+        // this.input.on('gameobjectdown', function (pointer, object) {
+        //     this.button.setScale(1);
+        // }, this);
+        // this.button.on('pointerover', function (pointer, object) {
+        //     this.button.setTexture('menu2');
+        // }, this)
+
+        // this.button.on('pointerout', function (pointer, object) {
+        //     this.button.setTexture('menu1');
+        // }, this)
     }
 
-    gameover(){
+    gameover() {
         this.end = true;
+        this.sound.play('lose');
+        this.bgm.stop();
         this.physics.world.removeCollider(this.playerCO);
+        this.time.delayedCall(100, () => {
+            this.scene.start('gameoverScene');
+        });
     }
+
+    // gomenu(pointer, gameObject) {
+    //     //this.sound.play('select');
+    //     this.button.setScale(2);
+    //     this.time.delayedCall(100, function () {
+    //         this.sound.play('select');
+    //         this.scene.start("menuScene");
+    //     }, [], this);
+    // }
 
     update(time, delta) {
-        if(this.end != true){
+        if (this.end != true) {
             player.update();
 
-        this.aimAngle = Phaser.Math.Angle.Between(player.x, player.y, reticle.x, reticle.y);
-        // Rotates player to face towards reticle
-        //player.rotation = Phaser.Math.Angle.Between(player.x, player.y, reticle.x, reticle.y);
-        this.indiVector = this.offset(this.aimAngle, 64);
-        indi.x = player.x + this.indiVector.x;
-        indi.y = player.y + this.indiVector.y;
+            this.aimAngle = Phaser.Math.Angle.Between(player.x, player.y, reticle.x, reticle.y);
+            // Rotates player to face towards reticle
+            //player.rotation = Phaser.Math.Angle.Between(player.x, player.y, reticle.x, reticle.y);
+            this.indiVector = this.offset(this.aimAngle, 64);
+            indi.x = player.x + this.indiVector.x;
+            indi.y = player.y + this.indiVector.y;
 
 
-        if (keyESC.justDown) {
-            if (game.input.mouse.locked) {
-                game.input.mouse.releasePointerLock();
+            if (keyESC.justDown) {
+                if (game.input.mouse.locked) {
+                    game.input.mouse.releasePointerLock();
+                }
             }
+            //this.physics.add.collider(this.enemies, this.playerBullets, this.enemyHit);
+
+            //player.setAccelerationX(this.speed);
+
+            //this.physics.world.collide(this.enemies, this.playerBullets, this.DinoCollision, null, this);
+            indi.body.velocity.x = player.body.velocity.x;
+            indi.body.velocity.y = player.body.velocity.y;
+            reticle.body.velocity.x = player.body.velocity.x;
+            reticle.body.velocity.y = player.body.velocity.y;
+
+
+            this.constrainReticle(reticle);
         }
-        //this.physics.add.collider(this.enemies, this.playerBullets, this.enemyHit);
-
-        //player.setAccelerationX(this.speed);
-
-        //this.physics.world.collide(this.enemies, this.playerBullets, this.DinoCollision, null, this);
-        indi.body.velocity.x = player.body.velocity.x;
-        indi.body.velocity.y = player.body.velocity.y;
-        reticle.body.velocity.x = player.body.velocity.x;
-        reticle.body.velocity.y = player.body.velocity.y;
-
-
-        this.constrainReticle(reticle);
-    }
 
 
         // if(this.zooming){

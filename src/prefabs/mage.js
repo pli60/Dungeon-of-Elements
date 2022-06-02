@@ -23,7 +23,7 @@ class mage extends Phaser.Physics.Arcade.Sprite {
         this.lockedGem = null;
         this.takingHit = false;
 
-        this.health = 10;
+        this.health = 3;
 
         this.circle = this.scene.physics.add.sprite(this.x,this.y, 'circle').setVisible(false).setActive(false);
         this.arrow = this.scene.physics.add.sprite(this.x,this.y, 'arrow').setVisible(false).setActive(false).setOrigin(0.5,0.5).setScale(0.2);//.setAlpha(0.5);
@@ -177,6 +177,7 @@ class mage extends Phaser.Physics.Arcade.Sprite {
     
     die(){
         player.setActive(false);
+        this.scene.sound.play('playerdeath');
         this.scene.gameover();
     }
     update() {
@@ -200,56 +201,45 @@ class mage extends Phaser.Physics.Arcade.Sprite {
         }else{
             this.setMaxVelocity(300);
         }
+
         if (keyA.isDown) {
             player.setAccelerationX(-1500);
             if(this.holding == false & this.attacking == false){
                 player.anims.play('player_move',true);
+                this.scene.walking.play();
             }
-            //player.setAccelerationY(0);
-
-            //test
             player.setFlipX(true);
-
         }
         else if (keyD.isDown) {
             player.setAccelerationX(1500);
             if(this.holding == false & this.attacking == false){
                 player.anims.play('player_move',true);
+                this.scene.walking.play();
             }
-            ///player.setAccelerationY(0);
-
-            //test
             player.setFlipX(false);
         }       
         else {
             player.setAccelerationX(0);
-
-
+            this.scene.walking.stop();
         }
 
         if (keyW.isDown) {
             player.setAccelerationY(-1500);
             if(this.holding == false & this.attacking == false){
                 player.anims.play('player_move',true);
+                this.scene.walking.play();
             }
-            //player.setAccelerationX(0);
-
-            //test
-
         }
         else if (keyS.isDown) {
             player.setAccelerationY(1500);
             if(this.holding == false & this.attacking == false){
                 player.anims.play('player_move',true);
+                this.scene.walking.play();
             }
-           // player.setAccelerationX(0);
-
-            //test
-
         }
         else {
             player.setAccelerationY(0);
-            //player.anims.play('player_move',true);
+            this.scene.walking.stop();
 
         }
         // if (Phaser.Input.Keyboard.JustDown(keySPACE)) {
