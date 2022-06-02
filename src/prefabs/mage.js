@@ -10,6 +10,7 @@ class mage extends Phaser.Physics.Arcade.Sprite {
         this.setDepth(2);
         //this.sfxFire = scene.sound.add('sfx_fire') 
         this.attacking = false;
+        this.walking = false;
         this.body.setMaxVelocity(300);
         //player utility variables
         this.speedCap = 300;
@@ -176,10 +177,11 @@ class mage extends Phaser.Physics.Arcade.Sprite {
     }
     
     die(){
-        player.setActive(false);
+        // player.setActive(false);
         this.scene.sound.play('playerdeath');
         this.scene.gameover();
     }
+
     update() {
         if(this.cd > 0){
             this.cd -= 1;
@@ -203,18 +205,18 @@ class mage extends Phaser.Physics.Arcade.Sprite {
         }
 
         if (keyA.isDown) {
-            player.setAccelerationX(-1500);
+            player.setAccelerationX(-1200);
             if(this.holding == false & this.attacking == false){
                 player.anims.play('player_move',true);
-                this.scene.walking.play();
+                // this.scene.walking.play();
             }
             player.setFlipX(true);
         }
         else if (keyD.isDown) {
-            player.setAccelerationX(1500);
+            player.setAccelerationX(1200);
             if(this.holding == false & this.attacking == false){
                 player.anims.play('player_move',true);
-                this.scene.walking.play();
+                // this.scene.walking.play();
             }
             player.setFlipX(false);
         }       
@@ -224,17 +226,17 @@ class mage extends Phaser.Physics.Arcade.Sprite {
         }
 
         if (keyW.isDown) {
-            player.setAccelerationY(-1500);
+            player.setAccelerationY(-1200);
             if(this.holding == false & this.attacking == false){
                 player.anims.play('player_move',true);
-                this.scene.walking.play();
+                // this.scene.walking.play();
             }
         }
         else if (keyS.isDown) {
-            player.setAccelerationY(1500);
+            player.setAccelerationY(1200);
             if(this.holding == false & this.attacking == false){
                 player.anims.play('player_move',true);
-                this.scene.walking.play();
+                // this.scene.walking.play();
             }
         }
         else {

@@ -3,6 +3,7 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
         super(scene, x, y, texture);
         this.scene = scene;
         scene.add.existing(this);
+        scene.physics.add.collider(scene.enemies, this);
         scene.enemies.add(this);
         //this.sfxFire = scene.sound.add('sfx_fire') 
 

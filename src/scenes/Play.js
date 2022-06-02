@@ -66,7 +66,6 @@ class Play extends Phaser.Scene {
 
         bullet.setDepth(2);
 
-
     }
     // spawnLevel() {
     //     this.spawnEnemy(0, centerY,1,1);
@@ -207,7 +206,7 @@ class Play extends Phaser.Scene {
 
         this.walking = this.sound.add('walking', {
             volume: 0.8,
-            rate: 0.5,
+            rate: 1,
             loop: true
         });
 
@@ -378,7 +377,6 @@ class Play extends Phaser.Scene {
         })
 
 
-
         this.enemySpawnLocGroup = this.add.group(this.enemySpawnLoc);
         this.enemySpawnLocGroup.children.each(function (enemySpawnLoc) {
             enemySpawnLoc.setTexture('magi1');
@@ -473,19 +471,7 @@ class Play extends Phaser.Scene {
         }
         this.Text = this.add.text(game.config.width / 2, game.config.height / 5 * 3, 'long HOLD <mouse buttons> to pick gems', menuConfig).setOrigin(0.5);
 
-        // this.button = this.add.sprite(game.config.width / 2, game.config.height / 3 * 2, 'play1').setOrigin(0.5).setScale(2);
-        // this.button.setInteractive();
-        // this.input.on('gameobjectup', this.gomenu, this);
-        // this.input.on('gameobjectdown', function (pointer, object) {
-        //     this.button.setScale(1);
-        // }, this);
-        // this.button.on('pointerover', function (pointer, object) {
-        //     this.button.setTexture('menu2');
-        // }, this)
-
-        // this.button.on('pointerout', function (pointer, object) {
-        //     this.button.setTexture('menu1');
-        // }, this)
+        this.input.on('gameobjectup', this.clicked, this);
     }
 
     gameover() {
@@ -493,19 +479,18 @@ class Play extends Phaser.Scene {
         this.sound.play('lose');
         this.bgm.stop();
         this.physics.world.removeCollider(this.playerCO);
-        this.time.delayedCall(100, () => {
+        this.time.delayedCall(1000, () => {
             this.scene.start('gameoverScene');
         });
     }
 
-    // gomenu(pointer, gameObject) {
-    //     //this.sound.play('select');
-    //     this.button.setScale(2);
-    //     this.time.delayedCall(100, function () {
-    //         this.sound.play('select');
-    //         this.scene.start("menuScene");
-    //     }, [], this);
-    // }
+    clicked(pointer, gameObject) {
+        //this.sound.play('select');
+        this.button.setScale(2);
+        this.time.delayedCall(100, function () {
+            this.sound.play('select');
+        }, [], this);
+    }
 
     update(time, delta) {
         if (this.end != true) {
@@ -517,9 +502,20 @@ class Play extends Phaser.Scene {
             this.indiVector = this.offset(this.aimAngle, 64);
             indi.x = player.x + this.indiVector.x;
             indi.y = player.y + this.indiVector.y;
-
+        } else {
+            player.setMaxVelocity(0);
+        }
 
             if (keyESC.justDown) {
+                this.button = this.add.sprite(player.X, player.Y, 'menu1').setOrigin(0.5).setScale(2);
+                this.button.setInteractive();
+                this.button.on('pointerover', function (pointer, object) {
+                    this.button.setTexture('menu2');
+                }, this)
+        
+                this.button.on('pointerout', function (pointer, object) {
+                    this.button.setTexture('menu1');
+                }, this)
                 if (game.input.mouse.locked) {
                     game.input.mouse.releasePointerLock();
                 }
@@ -536,7 +532,7 @@ class Play extends Phaser.Scene {
 
 
             this.constrainReticle(reticle);
-        }
+        
 
 
         // if(this.zooming){

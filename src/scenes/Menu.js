@@ -19,7 +19,7 @@ class Menu extends Phaser.Scene {
         keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
         // add background
-        //this.add.image(1280, 720, 'menu').setOrigin(1);;
+        //this.add.image(1280, 720, 'menu').setOrigin(1);
 
         // text
         let menuConfig = {
