@@ -37,7 +37,9 @@ class Menu extends Phaser.Scene {
         this.button = this.add.sprite(game.config.width / 2, game.config.height / 3 * 2, 'play1').setOrigin(0.5).setScale(2);
         this.button.setInteractive();
         this.Text = this.add.text(game.config.width / 2, game.config.height / 4.5 * 2, '[WASD] to move, [LEFT click] to shoot', menuConfig).setOrigin(0.5);
-        this.Text = this.add.text(game.config.width / 2, game.config.height / 4 * 2, 'Hold [LEFT click] to swap gem, [ESC] to show mouse cursor', menuConfig).setOrigin(0.5);
+        this.Text = this.add.text(game.config.width / 2, game.config.height / 4 * 2, 'Long hold [LEFT click] to swap gem, [ESC] to show mouse cursor', menuConfig).setOrigin(0.5);
+        this.Text = this.add.text(game.config.width / 2, game.config.height / 6 * 2, 'INSTRUCTIONS:', menuConfig).setOrigin(0.5);
+
         this.input.on('gameobjectup', this.clicked, this);
         this.input.on('gameobjectdown', function (pointer, object) {
             this.button.setScale(1.8);
