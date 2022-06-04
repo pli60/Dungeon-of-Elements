@@ -306,7 +306,7 @@ class Play extends Phaser.Scene {
         mainLayer.setCollisionByProperty({
             collides: true
         });
-
+        
         //generate gem from tile map
         this.gemsLoc1 = map.createFromTiles(26, 1, {
             key: "tilemap",
@@ -452,8 +452,9 @@ class Play extends Phaser.Scene {
         this.currentZoom = 1;
         this.zooming = false;
 
+        this.paused = false;
         this.aimAngle = 0;
-
+        this.button = null;
         //this.spawnLevel();
         this.physics.add.collider(this.enemies, this.playerBullets, this.enemyHit);
         this.playerCO = this.physics.add.collider(this.enemies, player, this.playerHit);
@@ -479,6 +480,9 @@ class Play extends Phaser.Scene {
         this.sound.play('lose');
         this.bgm.stop();
         this.physics.world.removeCollider(this.playerCO);
+        if (game.input.mouse.locked) {
+            game.input.mouse.releasePointerLock();
+        }
         this.time.delayedCall(1000, () => {
             this.scene.start('gameoverScene');
         });
@@ -506,9 +510,14 @@ class Play extends Phaser.Scene {
             player.setMaxVelocity(0);
         }
 
-            if (keyESC.justDown) {
-                this.button = this.add.sprite(player.X, player.Y, 'menu1').setOrigin(0.5).setScale(2);
+        if (Phaser.Input.Keyboard.JustDown(keyESC)) {
+            console.log("ese");
+            if(this.paused == false){
+                console.log("paused");
+                this.paused = true;
+                this.button = this.add.sprite(player.x, player.y, 'menu1').setOrigin(0.5).setScale(2).setDepth(2);
                 this.button.setInteractive();
+                this.button.fixedToCamera = true;
                 this.button.on('pointerover', function (pointer, object) {
                     this.button.setTexture('menu2');
                 }, this)
@@ -516,9 +525,13 @@ class Play extends Phaser.Scene {
                 this.button.on('pointerout', function (pointer, object) {
                     this.button.setTexture('menu1');
                 }, this)
-                if (game.input.mouse.locked) {
-                    game.input.mouse.releasePointerLock();
-                }
+                
+                game.input.mouse.releasePointerLock();
+            }else{
+                this.paused = false;
+                this.button.destroy();
+                game.input.mouse.requestPointerLock();
+            }
             }
             //this.physics.add.collider(this.enemies, this.playerBullets, this.enemyHit);
 

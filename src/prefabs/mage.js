@@ -178,6 +178,8 @@ class mage extends Phaser.Physics.Arcade.Sprite {
     
     die(){
         // player.setActive(false);
+        this.circle.setVisible(false).setActive(false);
+        this.arrow.setVisible(false).setActive(false);
         this.scene.sound.play('playerdeath');
         this.scene.gameover();
     }
