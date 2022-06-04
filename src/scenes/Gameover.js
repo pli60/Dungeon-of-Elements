@@ -41,12 +41,5 @@ class Gameover extends Phaser.Scene {
         }
 
         update() {
-                if (Phaser.Input.Keyboard.JustDown(keySPACE)) {
-                        // game.settings = {
-
-                        // }
-                        this.sound.play('select');
-                        this.scene.start('playScene');
-                }
         }
 }

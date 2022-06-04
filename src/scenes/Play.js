@@ -137,6 +137,31 @@ class Play extends Phaser.Scene {
         enemy.hit(player);
     }
 
+    levelSwitch(level,type){
+        var index;
+        var index2;
+        if(type == true){
+            index = 31;
+            index2 = 33;
+        }else{
+            index = 3;
+            index2 = 3;
+        }
+        if(level == 1){
+            this.map.fill(index,70,68,2,4, true, this.mainLayer);
+            this.map.fill(index,62,68,2,4, true, this.mainLayer);
+            this.map.setCollision(index,type);
+        }else if(level == 2){
+            this.map.fill(index,152,68,2,4, true, this.mainLayer);
+            this.map.fill(index,160,68,2,4, true, this.mainLayer);
+            this.map.setCollision(index,type);
+        }else if(level == 3){
+            this.map.fill(index2,110,46,4,2, true, this.mainLayer);
+            this.map.fill(index2,110,38,4,2, true, this.mainLayer);
+            this.map.setCollision(index2,type);
+        }
+    }
+
     preload() {
         //tilemap
         this.load.spritesheet("tilemap", "assets/map/tilemap.png", {
@@ -157,6 +182,9 @@ class Play extends Phaser.Scene {
         this.load.image('indicator', 'assets/sprites/ball.png');
         this.load.image('menu1', './assets/MENU.png');
         this.load.image('menu2', './assets/MENU2.png');
+        this.load.image('retry1', './assets/RETRY.png');
+        this.load.image('retry2', './assets/RETRY2.png');
+        this.load.image('roll', './assets/sprites/elemental_wheel.png');
 
         //enemies
         this.load.spritesheet('fireghost', 'assets/sprites/fireghost.png', { frameWidth: 100, frameHeight: 100, startFrame: 0, endFrame: 4 });
@@ -211,7 +239,7 @@ class Play extends Phaser.Scene {
         });
 
         //world size
-        this.physics.world.setBounds(0, 0, 10240, 5760);
+        this.physics.world.setBounds(0, 0, 12800, 10240);
         currScene = this;
 
         //animations
@@ -286,6 +314,8 @@ class Play extends Phaser.Scene {
             repeat: -1
         });
 
+
+        //main logic initializer
         this.enemies = this.physics.add.group()
         this.enemies.runChildUpdate = true;
         this.enemies.active = true;
@@ -298,16 +328,17 @@ class Play extends Phaser.Scene {
         this.gemsGroup.runChildUpdate = true;
         this.gemsGroup.active = true;
 
+        //map spawner
         const map = this.add.tilemap("dungeon_map");
         const tileset = map.addTilesetImage("tilemap");
         const mainLayer = map.createLayer("dungeon", tileset, 0, 0);
         this.mainLayer = mainLayer;
-        //const objLayer = map.createLayer("Objects", tileset, 0, 0);
         mainLayer.setCollisionByProperty({
             collides: true
         });
-        
-        //generate gem from tile map
+        map.replaceByIndex(40,1)
+        //generate objects from tile map
+
         this.gemsLoc1 = map.createFromTiles(26, 1, {
             key: "tilemap",
             frame: 25,
@@ -341,9 +372,57 @@ class Play extends Phaser.Scene {
             gemloc.destroy();
         }, this);
 
+        this.keyLoc1 = map.createFromTiles(48, 1, {
+            key: "tilemap",
+            frame: 37,
+            origin: (0.5, 0.5),
+            scale: 1.5
+        })
+        //this.keyLoc1[0].setScale(2);
 
+        this.keyLoc2 = map.createFromTiles(49, 1, {
+            key: "tilemap",
+            frame: 37,
+            origin: (0.5, 0.5),
+            scale: 1.5
+        })
 
+        this.keyLoc3 = map.createFromTiles(50, 1, {
+            key: "tilemap",
+            frame: 37,
+            origin: (0.5, 0.5),
+            scale: 1.5
+        })
 
+        this.keyLoc0 = map.createFromTiles(51, 1, {
+            key: "tilemap",
+            frame: 37,
+            origin: (0.5, 0.5),
+            scale: 1.5
+        })
+        this.keyLoc = map.createFromTiles(38, 1, {
+            key: "tilemap",
+            frame: 48,
+        })
+        this.keyGroup = this.add.group(this.keyLoc);
+        this.keysGroup = this.add.group();
+        this.keysGroup.runChildUpdate = true;
+        this.keyGroup.children.each(function (keyloc) {
+            var key;
+            if(keyloc.x < 3000){
+                key = new Pickup(this, keyloc.x, keyloc.y, 1, this.keyLoc1[0]).setScale(0.5);
+                key.active = true;
+                this.keysGroup.add(key);
+            }else if(keyloc.x > 8200){
+
+            }else if(keyloc.y < 2500){
+
+            }else{
+
+            }
+            //this.spawnKey(keyloc.x + 24, keyloc.y + 24, 0);
+            keyloc.destroy();
+        }, this);
         this.enemyLoc = map.createFromTiles(12, 2, {
             name: "enemy",
             //texture: 'magi2',
@@ -385,7 +464,7 @@ class Play extends Phaser.Scene {
             enemySpawnLoc.destroy();
         }, this);
 
-
+        this.map = map;
         this.enemyLocGroup1 = this.add.group(this.enemyLoc1);
         this.enemyLocGroup1.children.each(function (enemyLoc) {
             //enemyLoc.setTexture('magi2');
@@ -411,34 +490,27 @@ class Play extends Phaser.Scene {
             this.spawnEnemy(enemyLoc.x + 24, enemyLoc.y + 24, Phaser.Math.Between(1, 3), 3);
             enemyLoc.destroy();
         }, this);
-        //add tile map
-        //this.add.tilemap("dungeon_map");
-        //const tileset = map.addTilesetImage("tilemap");
-        //const groundLayer = map.createLayer("dungeon", tileset, 0, 0);
 
-        //{ classType: Bullet, runChildUpdate: true });
-        //enemyBullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
+        //==============================
+        //level logic & main game objects
+        this.inLevel = true;
+        this.level = 0;
         this.end = false;
-        // var background = this.add.image(0, 0, 'background');
-        //var background =this.add.rectangle(0, 0, 1024, 576, 0x000000).setOrigin(0, 0);
+
         player = new mage(this, centerX, centerY, 'player');
-        player.setPosition(5608, 4500)
+        if(check0){
+            player.setPosition(5608, 4500);
+        }else{
+            player.setPosition(5632, 5500);
+        }
+
         this.physics.add.collider(player, mainLayer);
-        //this.physics.add.collider(player, objLayer);
-        //player.anims.play('player_move');
-        //player.anims.add('player_attack');
 
         reticle = this.physics.add.sprite(centerX, centerY, 'target');
         indi = this.physics.add.sprite(centerX, centerY, 'indicator');
-        // this.physics.add.collider(this.p1, groundLayer);
+        reticle.setOrigin(0.5, 0.5).setDisplaySize(25, 25);
+        indi.setOrigin(0.5, 0.5).setSize(32, 32).setDisplaySize(32, 32);
 
-
-        // background.setOrigin(0, 0)
-        //player.setOrigin(0.5, 0.5).setDisplaySize(64, 64).setCollideWorldBounds(true).setDrag(1500, 1500);
-        reticle.setOrigin(0.5, 0.5).setDisplaySize(25, 25).setCollideWorldBounds(true);
-        indi.setOrigin(0.5, 0.5).setSize(32, 32).setDisplaySize(32, 32).setCollideWorldBounds(false);
-
-        //this.cameras.main.zoom = 1;
         keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
         keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
         keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
@@ -452,12 +524,58 @@ class Play extends Phaser.Scene {
         this.currentZoom = 1;
         this.zooming = false;
 
-        this.paused = false;
+
+        //pause menu
+        this.paused = true;
         this.aimAngle = 0;
-        this.button = null;
+        this.button1 = this.add.sprite(centerX+128, centerY+128, 'retry1').setOrigin(0.5).setScale(2).setDepth(2).setVisible(false).setScrollFactor(0);
+
+        this.button = this.add.sprite(centerX-128, centerY+128, 'menu1').setOrigin(0.5).setScale(2).setDepth(2).setVisible(false).setScrollFactor(0);
+        this.button.fixedToCamera = true;
+
+        this.button.setInteractive();
+        this.button.on('pointerover', function (pointer, object) {
+            this.button.setTexture('menu2');
+        }, this)
+
+        this.button.on('pointerout', function (pointer, object) {
+            this.button.setTexture('menu1');
+            this.button.setScale(2);
+        }, this)
+
+        this.button1.setInteractive();
+        this.button1.on('pointerover', function (pointer, object) {
+            this.button1.setTexture('retry2');
+        }, this)
+
+        this.button1.on('pointerout', function (pointer, object) {
+            this.button1.setTexture('retry1');
+            this.button1.setScale(2);
+        }, this)
+
+        this.button1.on('pointerdown', function (pointer, object) {
+            this.button1.setScale(1.8);
+        }, this);
+        this.button1.on('pointerup', function (pointer, object) {
+            this.sound.play('select');
+            this.cameras.main.fade(1000, 255, 255, 255);
+            this.time.delayedCall(1000, function () {
+                //this.sound.play('select');
+                this.scene.start('playScene');
+                this.bgm.stop();
+            }, [], this);
+        }, this);
+
+        this.button.on('pointerup', this.clicked, this);
+        this.button.setActive(false);
+        this.button1.setActive(false);
+        //spawn level
         //this.spawnLevel();
         this.physics.add.collider(this.enemies, this.playerBullets, this.enemyHit);
         this.playerCO = this.physics.add.collider(this.enemies, player, this.playerHit);
+
+        this.roll = this.physics.add.sprite(988,524, 'roll').setScale(0.3, 0.3);
+        this.roll.setScrollFactor(0);
 
         let menuConfig = {
             fontFamily: 'Impact',
@@ -471,8 +589,6 @@ class Play extends Phaser.Scene {
             fixedWidth: 0
         }
         this.Text = this.add.text(game.config.width / 2, game.config.height / 5 * 3, 'long HOLD <mouse buttons> to pick gems', menuConfig).setOrigin(0.5);
-
-        this.input.on('gameobjectup', this.clicked, this);
     }
 
     gameover() {
@@ -483,17 +599,35 @@ class Play extends Phaser.Scene {
         if (game.input.mouse.locked) {
             game.input.mouse.releasePointerLock();
         }
-        this.time.delayedCall(1000, () => {
-            this.scene.start('gameoverScene');
+        this.time.delayedCall(1500, () => {
+            this.toMenu();
         });
+    }
+
+    toMenu(){
+        this.end = true;
+        this.cameras.main.fade(1500, 0, 0, 0);
+        this.cameras.main.on('camerafadeoutcomplete', function () {
+            this.scene.start('menuScene');
+        }, this);
     }
 
     clicked(pointer, gameObject) {
         //this.sound.play('select');
-        this.button.setScale(2);
-        this.time.delayedCall(100, function () {
-            this.sound.play('select');
-        }, [], this);
+        //console.log(this.clicked);
+        this.button.setScale(2.1);
+        this.sound.play('select');
+        this.toMenu()
+        // this.time.delayedCall(100, function () {
+        //     //this.sound.play('select');
+        //     this.scene.start('menuScene');
+        // }, [], this);
+    }
+
+    levelCheck(){
+        ithis.levelSwitch(1,!check1);
+        ithis.levelSwitch(2,!check2);
+        ithis.levelSwitch(3,!check3);
     }
 
     update(time, delta) {
@@ -502,7 +636,7 @@ class Play extends Phaser.Scene {
 
             this.aimAngle = Phaser.Math.Angle.Between(player.x, player.y, reticle.x, reticle.y);
             // Rotates player to face towards reticle
-            //player.rotation = Phaser.Math.Angle.Between(player.x, player.y, reticle.x, reticle.y);
+
             this.indiVector = this.offset(this.aimAngle, 64);
             indi.x = player.x + this.indiVector.x;
             indi.y = player.y + this.indiVector.y;
@@ -510,42 +644,68 @@ class Play extends Phaser.Scene {
             player.setMaxVelocity(0);
         }
 
-        if (Phaser.Input.Keyboard.JustDown(keyESC)) {
-            console.log("ese");
+        //pause menu
+        if (game.input.mouse.locked == false) {
             if(this.paused == false){
-                console.log("paused");
                 this.paused = true;
-                this.button = this.add.sprite(player.x, player.y, 'menu1').setOrigin(0.5).setScale(2).setDepth(2);
-                this.button.setInteractive();
-                this.button.fixedToCamera = true;
-                this.button.on('pointerover', function (pointer, object) {
-                    this.button.setTexture('menu2');
-                }, this)
-        
-                this.button.on('pointerout', function (pointer, object) {
-                    this.button.setTexture('menu1');
-                }, this)
+                this.button.setVisible(true);
+                this.button.setActive(true);
+                this.button.setInteractive(true);
+                this.button1.setVisible(true);
+                this.button1.setActive(true);
+                this.button1.setInteractive(true);
+            }
                 
-                game.input.mouse.releasePointerLock();
-            }else{
-                this.paused = false;
-                this.button.destroy();
-                game.input.mouse.requestPointerLock();
+        }else{
+                if(this.paused == true){
+                    this.button.setInteractive(false);
+                    this.paused = false;
+                    this.button.setVisible(false);
+                    this.button.setActive(false);
+                    this.button1.setInteractive(false);
+                    this.button1.setVisible(false);
+                    this.button1.setActive(false);
+                }
+                
+        }
+        
+        //level switch, detect if player is in area
+        if (player.x > 3700 && player.x < 7500 && player.y > 2500 && player.y < 4520) {
+            if(this.inLevel == true){
+                this.inLevel = false;
+                this.check0 = true;
+                if(this.level == 1){
+                    this.levelSwitch(1,true);
+                }else if(this.level == 2){
+                    this.levelSwitch(2,true);
+                }else if(this.level == 3){
+                    this.levelSwitch(3,true);
+                }
+                this.level = 0;
             }
+        }else{
+            if(this.inLevel == false){
+                if(player.x < 3000){
+                    this.level = 1;
+                    this.levelSwitch(1,true);
+                }else if(player.x > 8200){
+                    this.level = 2;
+                    this.levelSwitch(2,true);
+                }else if(player.y < 1700){
+                    this.level = 3;
+                    this.levelSwitch(3,true);
+                }
+                }
             }
-            //this.physics.add.collider(this.enemies, this.playerBullets, this.enemyHit);
+        //console.log('Level: ' + this.level);
 
-            //player.setAccelerationX(this.speed);
-
-            //this.physics.world.collide(this.enemies, this.playerBullets, this.DinoCollision, null, this);
             indi.body.velocity.x = player.body.velocity.x;
             indi.body.velocity.y = player.body.velocity.y;
             reticle.body.velocity.x = player.body.velocity.x;
             reticle.body.velocity.y = player.body.velocity.y;
 
-
+            //console.log(map.getTileAtWorldXY(reticle.x, reticle.y));
             this.constrainReticle(reticle);
-        
 
 
         // if(this.zooming){

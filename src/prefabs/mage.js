@@ -22,9 +22,10 @@ class mage extends Phaser.Physics.Arcade.Sprite {
         this.holdDuration = 0;
         this.charged = false;
         this.lockedGem = null;
-        this.takingHit = false;
 
-        this.health = 3;
+        this.takingHit = true;
+
+        this.health = 10;
 
         this.circle = this.scene.physics.add.sprite(this.x,this.y, 'circle').setVisible(false).setActive(false);
         this.arrow = this.scene.physics.add.sprite(this.x,this.y, 'arrow').setVisible(false).setActive(false).setOrigin(0.5,0.5).setScale(0.2);//.setAlpha(0.5);
@@ -59,7 +60,9 @@ class mage extends Phaser.Physics.Arcade.Sprite {
             if (player.active === false)
                 return;
                 //print player position to console log
-                //console.log('x:'+ this.x + '   y:' + this.y);
+                // console.log('x:'+ reticle.x + '   y:' + reticle.y);
+                // console.log(scene.map.getTileAtWorldXY(reticle.x, reticle.y));
+                //this.scene.levelSwitch(1,false);
                 if(this.charged){
                     this.tween.stop();
                 }
@@ -77,9 +80,9 @@ class mage extends Phaser.Physics.Arcade.Sprite {
                     if(this.charged == false){
                         this.scene.sound.play('shoot');
                         if(this.weapon == 0) {
-                            var bullet = scene.spawnBullet(indi.x, indi.y, scene.aimAngle,this.weapon, 1);
+                            var bullet = scene.spawnBullet(player.x, player.y, scene.aimAngle,this.weapon, 1);
                         }else{
-                            var bullet = scene.spawnBullet(indi.x, indi.y, scene.aimAngle,this.weapon, 0);
+                            var bullet = scene.spawnBullet(player.x, player.y, scene.aimAngle,this.weapon, 0);
                             //var bullet = scene.spawnBullet(indi.x, indi.y, scene.aimAngle+1,this.weapon, 0);
                             //var bullet = scene.spawnBullet(indi.x, indi.y, scene.aimAngle-1,this.weapon, 0);
                         }
