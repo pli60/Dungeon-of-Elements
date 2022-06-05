@@ -11,18 +11,18 @@ class Gem extends Phaser.Physics.Arcade.Sprite {
             this.body.setAllowDrag(true);
             this.body.setBounce(1);
             //this.body.setDamping(true);
-            this.body.setCollideWorldBounds(true);
+            //this.body.setCollideWorldBounds(true);
             this.circle = this.scene.physics.add.sprite(this.x,this.y, 'circle').setVisible(false).setActive(false);
             this.magi = this.scene.physics.add.sprite(this.x,this.y, 'ball').setVisible(false).setActive(false).setScale(0.2);
             this.magi.sp = true;
-            this.magi.element = this.element;
-            
+            this.magi.element = element;
+            scene.physics.add.collider(this, scene.mainLayer);
 
             this.setOrigin(0.5, 0.5);
             //this.setPosition(x, y);
             //this.setRotation(angle);
             this.setDepth(2);
-            this.body.setMaxVelocity(800);
+            this.body.setMaxVelocity(600);
 
             this.element = element;
             this.actived = false;
@@ -157,6 +157,7 @@ class Gem extends Phaser.Physics.Arcade.Sprite {
             player.activing = true;
             this.showCircle(false);
             player.switchWeapon(this.element);
+            this.scene.sound.play('pickup');
         }
         
     }
@@ -172,6 +173,7 @@ class Gem extends Phaser.Physics.Arcade.Sprite {
         player.lockedGem = null;
         this.cooldown=300;
         this.showCircle(false);
+        this.body.setMaxVelocity(1000);
         //this.scene.physics.add.collider(this.scene.enemies, this, this.scene.enemyHit);
         this.body.velocity.x = Math.cos(this.scene.aimAngle) * (1500);
         this.body.velocity.y = Math.sin(this.scene.aimAngle) * (1500);
@@ -184,7 +186,7 @@ class Gem extends Phaser.Physics.Arcade.Sprite {
         //delay call 3000
         this.scene.time.delayedCall(1000, function(){
             //tween magi size
-            
+            this.body.setMaxVelocity(600);
             var killMagi = this.scene.tweens.add({
                 targets: this.magi,
                 scale: 0.01,

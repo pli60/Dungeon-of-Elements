@@ -51,16 +51,26 @@ class Menu extends Phaser.Scene {
         this.button.on('pointerout', function (pointer, object) {
             this.button.setTexture('play1');
         }, this)
+        check0 = false;
+        check1 = false;
+        check2 = false;
+        check3 = false;
     }
 
 
     clicked(pointer, gameObject) {
         //this.sound.play('select');
+        this.button.setInteractive(false);
         this.button.setScale(2);
-        this.time.delayedCall(100, function () {
-            this.sound.play('select');
+        this.cameras.main.fade(1000, 0, 0, 0);
+        let soundConfig = {
+            volume: 0.5
+        }
+        this.sound.play('select',soundConfig);
+        this.cameras.main.on('camerafadeoutcomplete', function () {
+            //this.sound.play('select',soundConfig);
             this.scene.start("playScene");
-        }, [], this);
+        }, this);
     }
 
     update() {

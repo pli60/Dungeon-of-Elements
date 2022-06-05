@@ -23,10 +23,10 @@ class mage extends Phaser.Physics.Arcade.Sprite {
         this.charged = false;
         this.lockedGem = null;
 
-        this.takingHit = true;
+        this.takingHit = false;
 
-        this.health = 10;
-
+        this.health = 5;
+        this.scene.walking.play();
         this.circle = this.scene.physics.add.sprite(this.x,this.y, 'circle').setVisible(false).setActive(false);
         this.arrow = this.scene.physics.add.sprite(this.x,this.y, 'arrow').setVisible(false).setActive(false).setOrigin(0.5,0.5).setScale(0.2);//.setAlpha(0.5);
         this.playerRing = this.scene.physics.add.sprite(centerX,centerY, 'highlight').setScale(0.6).setDepth(1);
@@ -35,11 +35,14 @@ class mage extends Phaser.Physics.Arcade.Sprite {
         this.body.setSize(72,72);
         //this.body.setSize(72,72);
         this.setOrigin(0.5, 0.5).setDisplaySize(64, 64).setCollideWorldBounds(true).setDrag(1500, 1500);
-
+        let soundConfig = {
+            volume: 0.4
+        }
 
         scene.input.on('pointerdown', function (pointer, time, lastFired) {
             if (player.active === false)
                 return;
+            game.input.mouse.requestPointerLock();
             if(this.cd == 0){
                 if(this.holding == false){
                     this.holding = true;
@@ -57,11 +60,12 @@ class mage extends Phaser.Physics.Arcade.Sprite {
         }, this);
 
         scene.input.on('pointerup', function (pointer, time, lastFired) {
+            game.input.mouse.requestPointerLock();
             if (player.active === false)
                 return;
                 //print player position to console log
                 // console.log('x:'+ reticle.x + '   y:' + reticle.y);
-                // console.log(scene.map.getTileAtWorldXY(reticle.x, reticle.y));
+                //console.log(scene.map.getTileAtWorldXY(reticle.x, reticle.y));
                 //this.scene.levelSwitch(1,false);
                 if(this.charged){
                     this.tween.stop();
@@ -78,10 +82,12 @@ class mage extends Phaser.Physics.Arcade.Sprite {
                     }, [], this);
                     player.anims.play('player_attack2');
                     if(this.charged == false){
-                        this.scene.sound.play('shoot');
+                        //this.scene.sound.play('shoot');
                         if(this.weapon == 0) {
+                            this.scene.sound.play('shoot',soundConfig);
                             var bullet = scene.spawnBullet(player.x, player.y, scene.aimAngle,this.weapon, 1);
                         }else{
+                            this.scene.sound.play(elements[this.weapon-1]+'shot',soundConfig);
                             var bullet = scene.spawnBullet(player.x, player.y, scene.aimAngle,this.weapon, 0);
                             //var bullet = scene.spawnBullet(indi.x, indi.y, scene.aimAngle+1,this.weapon, 0);
                             //var bullet = scene.spawnBullet(indi.x, indi.y, scene.aimAngle-1,this.weapon, 0);
@@ -91,9 +97,11 @@ class mage extends Phaser.Physics.Arcade.Sprite {
                         this.cd = 30;
                         if(this.weapon == 0){
                             //get gem
+                            
                             this.scene.gemsGroup.getChildren().forEach(this.getgem, this);
                         }else{
                             //release gem
+                            this.scene.sound.play('spshot');
                             this.lockedGem.release();
                             this.switchWeapon(0);
                         }
@@ -181,6 +189,8 @@ class mage extends Phaser.Physics.Arcade.Sprite {
     
     die(){
         // player.setActive(false);
+        //stop playing walking
+        this.scene.walking.stop();
         this.circle.setVisible(false).setActive(false);
         this.arrow.setVisible(false).setActive(false);
         this.scene.sound.play('playerdeath');
@@ -195,14 +205,17 @@ class mage extends Phaser.Physics.Arcade.Sprite {
             //this.setScale(1.1);
             this.holdDuration += 1;
             this.setMaxVelocity(200);
-            if(this.holdDuration > 60 & this.holdDuration < 180){
+            if(this.holdDuration > 45 & this.holdDuration < 150){
                 this.circle.setVisible(true).setActive(true);
-                this.circle.scale = this.scene.lerp(0,3,this.holdDuration/180);
-                this.scene.cameras.main.zoom = this.scene.lerp(1,0.96,this.holdDuration/180);
+                this.circle.scale = this.scene.lerp(0,3,this.holdDuration/150);
+                this.scene.cameras.main.zoom = this.scene.lerp(1,0.96,this.holdDuration/150);
             }
-            if(this.holdDuration > 180 & this.charged == false & this.activing == false){
+            if(this.holdDuration > 150 & this.charged == false & this.activing == false){
                 this.charged = true;
-                
+                // let soundConfig = {
+                //     volume: 0.5
+                // }
+                this.scene.sound.play('charge');
                 this.checkCharge(true);
             }
         }else{
@@ -213,7 +226,12 @@ class mage extends Phaser.Physics.Arcade.Sprite {
             player.setAccelerationX(-1200);
             if(this.holding == false & this.attacking == false){
                 player.anims.play('player_move',true);
-                // this.scene.walking.play();
+                if(this.walking == false){
+                    this.scene.walking.play();
+                    this.walking = true;
+                }
+                
+
             }
             player.setFlipX(true);
         }
@@ -221,39 +239,54 @@ class mage extends Phaser.Physics.Arcade.Sprite {
             player.setAccelerationX(1200);
             if(this.holding == false & this.attacking == false){
                 player.anims.play('player_move',true);
-                // this.scene.walking.play();
+                if(this.walking == false){
+                    this.scene.walking.play();
+                    this.walking = true;
+                }
+
             }
             player.setFlipX(false);
         }       
         else {
             player.setAccelerationX(0);
-            this.scene.walking.stop();
+            //this.scene.walking.stop();
         }
 
         if (keyW.isDown) {
             player.setAccelerationY(-1200);
             if(this.holding == false & this.attacking == false){
                 player.anims.play('player_move',true);
-                // this.scene.walking.play();
+                if(this.walking == false){
+                    this.scene.walking.play();
+                    this.walking = true;
+                }
+
             }
         }
         else if (keyS.isDown) {
             player.setAccelerationY(1200);
             if(this.holding == false & this.attacking == false){
                 player.anims.play('player_move',true);
-                // this.scene.walking.play();
+                if(this.walking == false){
+                    this.scene.walking.play();
+                    this.walking = true;
+                }
             }
         }
         else {
             player.setAccelerationY(0);
-            this.scene.walking.stop();
+            
+            //this.scene.walking.stop();
 
         }
         // if (Phaser.Input.Keyboard.JustDown(keySPACE)) {
         //     //this.switchSize();
         //     //this.scene.gemsGroup.getChildren().forEach(this.check, this);
         // }
-
+        if(player.body.velocity.x == 0 & player.body.velocity.y == 0){
+            this.walking =false;
+            this.scene.walking.stop();
+        }
         if(this.circle.active == true){
             this.circle.x = this.x;
             this.circle.y = this.y;
