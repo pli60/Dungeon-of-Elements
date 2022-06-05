@@ -28,7 +28,11 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.floatmoving = false;
         this.lastAngle = null;
         this.setOrigin(0.5, 0.5).setDisplaySize(64, 64).setCollideWorldBounds(true).setDrag(600, 600);
-        
+        this.anims.play('a_'+texture);
+
+        this.soundConfig = {
+            volume: 1.5
+        }
         //this.setTint(Phaser.Display.Color.GetColor(50, 0, 0));
     }
 
@@ -106,9 +110,18 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
                 if(element!= 0){
                     if(element % 3 + 1 == this.element){
                         damage = 3;
+                        this.soundConfig.volume=2;
+                        this.scene.sound.play('sphit',this.soundConfig);
+                    }else{
+                        this.soundConfig.volume=1.2;
+                        this.scene.sound.play('hit',this.soundConfig);
                     }
+                }else{
+                    this.soundConfig.volume=1;
+                    this.scene.sound.play('hit',this.soundConfig);
                 }
                 if(sp){
+                    console.log(element)
                     damage *= 2;
                 }
                 var targetAngle = Phaser.Math.Angle.Between(player.x,player.y,this.x,this.y);
@@ -187,24 +200,27 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
         }
     }
 
-    die(){
+    die(instant = false){
         this.state = 4;
         this.setDrag(1000);
-        this.scene.enemies.remove(this);
-        this.dieTween = this.scene.tweens.add({
-            targets: this,
-            tint: {from:200, to:0},
-            alpah: 0,
-            duration: 3000,
-        });
-        this.tweenHit = this.scene.tweens.add({
-            targets: this,
-            alpha: 0,
-            ease: 'Power2',
-            duration: 1500,
-            loop: 0,
-        });
-
+        if(!instant){
+            this.dieTween = this.scene.tweens.add({
+                targets: this,
+                tint: {from:200, to:0},
+                alpah: 0,
+                duration: 3000,
+            });
+            this.tweenHit = this.scene.tweens.add({
+                targets: this,
+                alpha: 0,
+                ease: 'Power2',
+                duration: 1500,
+                loop: 0,
+            });
+        }
+        this.scene.time.delayedCall(100, function(){
+            this.scene.enemies.remove(this);
+        }, [], this);
         
         this.scene.time.delayedCall(3000, function(){
             this.destroy();

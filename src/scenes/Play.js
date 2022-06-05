@@ -140,6 +140,7 @@ class Play extends Phaser.Scene {
     levelSwitch(level,type){
         var index;
         var index2;
+        this.gateclosed.play()
         if(type == true){
             index = 31;
             index2 = 33;
@@ -158,6 +159,10 @@ class Play extends Phaser.Scene {
         }else if(level == 3){
             this.map.fill(index2,110,46,4,2, true, this.mainLayer);
             this.map.fill(index2,110,38,4,2, true, this.mainLayer);
+            this.map.setCollision(index2,type);
+        }else{
+            this.map.fill(index2,110,98,4,1, true, this.mainLayer);
+            this.map.fill(index2,110,91,4,1, true, this.mainLayer);
             this.map.setCollision(index2,type);
         }
     }
@@ -200,9 +205,13 @@ class Play extends Phaser.Scene {
 
         //objects
         this.load.image('bullet', 'assets/sprites/ball.png');
+        this.load.image('heart', 'assets/sprites/Heart.png');
         this.load.image('waterGem', 'assets/sprites/WaterGem.png');
         this.load.image('fireGem', 'assets/sprites/FireGem.png');
         this.load.image('lightningGem', 'assets/sprites/LightningGem.png');
+        this.load.image('UGem1', 'assets/sprites/UniqueWaterGem.png');
+        this.load.image('UGem2', 'assets/sprites/UniqueFireGem.png');
+        this.load.image('UGem3', 'assets/sprites/UniqueLightningGem.png');
 
         //VFX
         this.load.image('circle', 'assets/sprites/Circle.png');
@@ -211,19 +220,32 @@ class Play extends Phaser.Scene {
         this.load.image('highlight', 'assets/sprites/Ring.png');
         this.load.image('magi1', 'assets/sprites/MAGI1.png');
         this.load.image('magi2', 'assets/sprites/MAGI2.png');
+        this.load.image('lightRing', 'assets/sprites/Highlight.png');
 
         //audio
         this.load.audio('shoot', 'assets/audio/shoot.wav');
+        this.load.audio('charge', 'assets/audio/charge.ogg');
         this.load.audio('bgm', './assets/audio/bgm.mp3');
-        this.load.audio('walking', './assets/audio/walking.wav');
+        this.load.audio('walking', './assets/audio/walk.wav');
         this.load.audio('lose', './assets/audio/lose.wav');
         this.load.audio('win', './assets/audio/win.wav');
+        this.load.audio('win2', './assets/audio/win2.wav');
+        this.load.audio('ending', './assets/audio/ending.wav');
+        this.load.audio('gate', './assets/audio/gate_closed.wav');
         this.load.audio('playerdeath', './assets/audio/death2.wav');
+        this.load.audio('watershot', 'assets/audio/watershot.wav');
+        this.load.audio('fireshot', 'assets/audio/fireshot.wav');
+        this.load.audio('lightningshot', 'assets/audio/lightningshot.wav');
+        this.load.audio('pickup', 'assets/audio/pickup.wav');
+        this.load.audio('spshot', 'assets/audio/spShoot.wav');
+        this.load.audio('hit', 'assets/audio/hit.wav');
+        this.load.audio('sphit', 'assets/audio/sphit.wav');
 
     }
 
     create() {
         // play bgm
+        this.cameras.main.fadeFrom(1000, 0, 0, 0);
         this.bgm = this.sound.add('bgm', {
             mute: false,
             volume: 0.3,
@@ -233,11 +255,30 @@ class Play extends Phaser.Scene {
         this.bgm.play();
 
         this.walking = this.sound.add('walking', {
-            volume: 0.8,
+            volume: 0.7,
             rate: 1,
             loop: true
         });
+        this.pickupReady = this.sound.add('win2', {
+            volume: 1,
+            rate: 1,
 
+        });
+        this.pickupDone = this.sound.add('win', {
+            volume: 1,
+            rate: 1,
+
+        });
+        this.gateclosed = this.sound.add('gate', {
+            volume: 1.5,
+            rate: 1,
+
+        });
+        this.winSound = this.sound.add('ending', {
+            volume: 1,
+            rate: 1,
+
+        });
         //world size
         this.physics.world.setBounds(0, 0, 12800, 10240);
         currScene = this;
@@ -262,19 +303,19 @@ class Play extends Phaser.Scene {
         this.anims.create({
             key: 'a_fireghost',
             frames: this.anims.generateFrameNumbers('fireghost', { start: 0, end: 4 }),
-            frameRate: 30,
+            frameRate: 5,
             repeat: -1
         });
         this.anims.create({
             key: 'a_waterghost',
             frames: this.anims.generateFrameNumbers('waterghost', { start: 0, end: 4 }),
-            frameRate: 30,
+            frameRate: 5,
             repeat: -1
         });
         this.anims.create({
             key: 'a_lightningghost',
             frames: this.anims.generateFrameNumbers('lightningghost', { start: 0, end: 4 }),
-            frameRate: 30,
+            frameRate: 5,
             repeat: -1
         });
         this.anims.create({
@@ -298,19 +339,19 @@ class Play extends Phaser.Scene {
         this.anims.create({
             key: 'a_fireskeleton',
             frames: this.anims.generateFrameNumbers('fireskeleton', { start: 0, end: 4 }),
-            frameRate: 30,
+            frameRate: 4,
             repeat: -1
         });
         this.anims.create({
             key: 'a_waterskeleton',
             frames: this.anims.generateFrameNumbers('waterskeleton', { start: 0, end: 4 }),
-            frameRate: 30,
+            frameRate: 4,
             repeat: -1
         });
         this.anims.create({
             key: 'a_lightningskeleton',
             frames: this.anims.generateFrameNumbers('lightningskeleton', { start: 0, end: 4 }),
-            frameRate: 30,
+            frameRate: 4,
             repeat: -1
         });
 
@@ -383,21 +424,22 @@ class Play extends Phaser.Scene {
         this.keyLoc2 = map.createFromTiles(49, 1, {
             key: "tilemap",
             frame: 37,
-            origin: (0.5, 0.5),
+            origin: [0.5, 0.4],
             scale: 1.5
         })
 
         this.keyLoc3 = map.createFromTiles(50, 1, {
             key: "tilemap",
             frame: 37,
-            origin: (0.5, 0.5),
+            origin: [0.5, 0],
             scale: 1.5
         })
 
         this.keyLoc0 = map.createFromTiles(51, 1, {
             key: "tilemap",
             frame: 37,
-            origin: (0.5, 0.5),
+            originX: 0.5,
+            originY: 0.4,
             scale: 1.5
         })
         this.keyLoc = map.createFromTiles(38, 1, {
@@ -409,16 +451,22 @@ class Play extends Phaser.Scene {
         this.keysGroup.runChildUpdate = true;
         this.keyGroup.children.each(function (keyloc) {
             var key;
-            if(keyloc.x < 3000){
-                key = new Pickup(this, keyloc.x, keyloc.y, 1, this.keyLoc1[0]).setScale(0.5);
+            if(keyloc.x < 3000 & !check1){
+                key = new Pickup(this, keyloc.x+24, keyloc.y+24,'UGem1', 1, this.keyLoc1[0]).setScale(0.8);
                 key.active = true;
                 this.keysGroup.add(key);
-            }else if(keyloc.x > 8200){
-
-            }else if(keyloc.y < 2500){
-
-            }else{
-
+            }else if(keyloc.x > 8200 & !check2){
+                key = new Pickup(this, keyloc.x+24, keyloc.y+24,'UGem2', 2, this.keyLoc2[0]).setScale(0.8);
+                key.active = true;
+                this.keysGroup.add(key);
+            }else if(keyloc.y < 2500 & !check3){
+                key = new Pickup(this, keyloc.x+24, keyloc.y+24,'UGem3', 3, this.keyLoc3[0]).setScale(0.8);
+                key.active = true;
+                this.keysGroup.add(key);
+            }else if(!check0){
+                key = new Pickup(this, keyloc.x+24, keyloc.y+24,'UGem2', 0, this.keyLoc0[0]).setScale(0.8);
+                key.active = true;
+                this.keysGroup.add(key);
             }
             //this.spawnKey(keyloc.x + 24, keyloc.y + 24, 0);
             keyloc.destroy();
@@ -491,18 +539,43 @@ class Play extends Phaser.Scene {
             enemyLoc.destroy();
         }, this);
 
+        this.levelSwitch(0,true);
+
+
+
+        this.menuConfig = {
+            fontFamily: 'Impact',
+            fontSize: '28px',
+            color: '#FFFFFF',
+            align: 'center',
+            padding: {
+                top: 5,
+                bottom: 5,
+            },
+            fixedWidth: 0,
+        }
+
         //==============================
         //level logic & main game objects
         this.inLevel = true;
         this.level = 0;
         this.end = false;
+        this.checkLevelAll();
 
         player = new mage(this, centerX, centerY, 'player');
-        if(check0){
-            player.setPosition(5608, 4500);
+        if(check0 == true){
+            player.setPosition(5602, 3400);
         }else{
-            player.setPosition(5632, 5500);
+            player.setPosition(5602, 6150);
         }
+        this.add.sprite(5608, 5500 + game.config.height / 4-100, 'roll').setScale(0.5, 0.5);
+        this.Text = this.add.text(5608, 5500 + game.config.height / 6 * 2 + 300, '[WASD] to move, [mouse click] to shoot', this.menuConfig).setOrigin(0.5);
+        this.Text = this.add.text(5608, 5500 + game.config.height / 4+80, 'HOLD [mouse] and hover over a gem to swap gems', this.menuConfig).setOrigin(0.5);
+        this.Text = this.add.text(5608, 5500 + game.config.height / 4-220, 'Gems makes you more effective against countered enemies', this.menuConfig).setOrigin(0.5);
+        this.Text = this.add.text(5608, 5500 + game.config.height / 6 * 2 + 230, 'INSTRUCTIONS:', this.menuConfig).setOrigin(0.5);
+        this.add.text(5608, 5500 + game.config.height / 6 * 2 + 360, '[ESC] to show mouse', this.menuConfig).setOrigin(0.5);
+        this.add.text(5608, 5500 + game.config.height / 4-472, ' <- Collect the key stone to unlock doors', this.menuConfig).setOrigin(0.5);
+        this.add.text(5608, 5500 + game.config.height / 4-572, 'follow the key stone to seek power!', this.menuConfig).setOrigin(0.5);
 
         this.physics.add.collider(player, mainLayer);
 
@@ -574,7 +647,7 @@ class Play extends Phaser.Scene {
         this.physics.add.collider(this.enemies, this.playerBullets, this.enemyHit);
         this.playerCO = this.physics.add.collider(this.enemies, player, this.playerHit);
 
-        this.roll = this.physics.add.sprite(988,524, 'roll').setScale(0.3, 0.3);
+        this.roll = this.add.sprite(988,524, 'roll').setScale(0.3, 0.3);
         this.roll.setScrollFactor(0);
 
         let menuConfig = {
@@ -599,9 +672,12 @@ class Play extends Phaser.Scene {
         if (game.input.mouse.locked) {
             game.input.mouse.releasePointerLock();
         }
-        this.time.delayedCall(1500, () => {
-            this.toMenu();
-        });
+
+        this.cameras.main.fade(1500, 0, 0, 0);
+        this.time.delayedCall(1500, function () {
+            //this.sound.play('select');
+            this.scene.start('gameoverScene');
+        }, [], this);
     }
 
     toMenu(){
@@ -624,13 +700,65 @@ class Play extends Phaser.Scene {
         // }, [], this);
     }
 
-    levelCheck(){
-        ithis.levelSwitch(1,!check1);
-        ithis.levelSwitch(2,!check2);
-        ithis.levelSwitch(3,!check3);
+    checkLevelAll(){
+        if(check0){
+            this.levelCheck(0);
+        }
+        if(check1){
+            this.levelCheck(1);
+        }
+        if(check2){
+            this.levelCheck(2);
+        }
+        if(check3){
+            this.levelCheck(3);
+        }
+    }
+
+    levelCheck(level){
+        if(level == 0){
+            check0 = true;
+            this.add.sprite(this.keyLoc0[0].x,this.keyLoc0[0].y-72, 'UGem2').setScale(0.8);
+        }else if(level == 1){
+            check1 = true;
+            this.levelSwitch(1,true);
+            this.enemies.children.each(function (enemy) {
+                if(enemy.x < 3000){
+                    enemy.die(true);
+                }
+            }, this);
+            //add a sprite
+            this.add.sprite(this.keyLoc1[0].x,this.keyLoc0[0].y-72, 'UGem1').setScale(0.8);
+
+        }else if(level == 2){
+            check2 = true;
+            this.levelSwitch(2,true);
+            this.enemies.children.each(function (enemy) {
+                if(enemy.x >8200){
+                    enemy.die(true);
+                }
+            }, this);
+            //add a sprite
+            this.add.sprite(this.keyLoc2[0].x,this.keyLoc2[0].y-72, 'UGem2').setScale(0.8);
+        }else if(level == 3){
+            check3 = true;
+            this.levelSwitch(3,true);
+            this.enemies.children.each(function (enemy) {
+                if(enemy.y < 2500){
+                    enemy.die(true);
+                }
+            }, this);
+            //add a sprite
+            this.add.sprite(this.keyLoc3[0].x,this.keyLoc3[0].y-72, 'UGem3').setScale(0.8);
+        }
+        if(check0 && check1 && check2 && check3){
+            this.winSound.play();
+            //this.scene.start('winScene');
+        }
     }
 
     update(time, delta) {
+        //console.log(check0);
         if (this.end != true) {
             player.update();
 
@@ -640,51 +768,53 @@ class Play extends Phaser.Scene {
             this.indiVector = this.offset(this.aimAngle, 64);
             indi.x = player.x + this.indiVector.x;
             indi.y = player.y + this.indiVector.y;
+            if (game.input.mouse.locked == false) {
+                if(this.paused == false){
+                    this.paused = true;
+                    this.button.setVisible(true);
+                    this.button.setActive(true);
+                    this.button.setInteractive(true);
+                    this.button1.setVisible(true);
+                    this.button1.setActive(true);
+                    this.button1.setInteractive(true);
+                }
+                    
+            }else{
+                    if(this.paused == true){
+                        this.button.setInteractive(false);
+                        this.paused = false;
+                        this.button.setVisible(false);
+                        this.button.setActive(false);
+                        this.button1.setInteractive(false);
+                        this.button1.setVisible(false);
+                        this.button1.setActive(false);
+                    }
+                    
+            }
         } else {
             player.setMaxVelocity(0);
         }
 
         //pause menu
-        if (game.input.mouse.locked == false) {
-            if(this.paused == false){
-                this.paused = true;
-                this.button.setVisible(true);
-                this.button.setActive(true);
-                this.button.setInteractive(true);
-                this.button1.setVisible(true);
-                this.button1.setActive(true);
-                this.button1.setInteractive(true);
-            }
-                
-        }else{
-                if(this.paused == true){
-                    this.button.setInteractive(false);
-                    this.paused = false;
-                    this.button.setVisible(false);
-                    this.button.setActive(false);
-                    this.button1.setInteractive(false);
-                    this.button1.setVisible(false);
-                    this.button1.setActive(false);
-                }
-                
-        }
+
         
         //level switch, detect if player is in area
         if (player.x > 3700 && player.x < 7500 && player.y > 2500 && player.y < 4520) {
             if(this.inLevel == true){
                 this.inLevel = false;
-                this.check0 = true;
+                check0 = true;
                 if(this.level == 1){
                     this.levelSwitch(1,true);
                 }else if(this.level == 2){
                     this.levelSwitch(2,true);
                 }else if(this.level == 3){
                     this.levelSwitch(3,true);
+                    
                 }
                 this.level = 0;
             }
         }else{
-            if(this.inLevel == false){
+            if(this.inLevel == false & this.level == 0){
                 if(player.x < 3000){
                     this.level = 1;
                     this.levelSwitch(1,true);
