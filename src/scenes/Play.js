@@ -682,6 +682,7 @@ class Play extends Phaser.Scene {
 
     toMenu(){
         this.end = true;
+        this.bgm.stop();
         this.cameras.main.fade(1500, 0, 0, 0);
         this.cameras.main.on('camerafadeoutcomplete', function () {
             this.scene.start('menuScene');
@@ -751,9 +752,13 @@ class Play extends Phaser.Scene {
             //add a sprite
             this.add.sprite(this.keyLoc3[0].x,this.keyLoc3[0].y-72, 'UGem3').setScale(0.8);
         }
-        if(check0 && check1 && check2 && check3){
+        if (check0 && check1 && check2 && check3) {
             this.winSound.play();
-            //this.scene.start('winScene');
+            this.cameras.main.fade(2000, 0, 0, 0);
+            this.time.delayedCall(2000, function () {
+                this.bgm.stop();
+                this.scene.start('winScene');
+            }, [], this);
         }
     }
 
