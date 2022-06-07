@@ -22,6 +22,16 @@ class Play extends Phaser.Scene {
         };
     }
 
+    shake(duration = 300, intensity = 100, damp = 1) {
+        this.shaking = true;
+        this.shaketime = duration;
+        this.targetx = Phaser.Math.Between(-10*damp, 10*damp);
+        this.targety = Phaser.Math.Between(-10*damp, 10*damp);
+        this.shakeCounter = intensity;
+        this.shakeintense = intensity;
+        this.shakeDamp = damp;
+    }
+
     //calculate look at rotation
     lookAt(x, y) {
         var angle = Math.atan2(y, x);
@@ -137,33 +147,34 @@ class Play extends Phaser.Scene {
         enemy.hit(player);
     }
 
-    levelSwitch(level, type) {
+    levelSwitch(level,type){
         var index;
         var index2;
         this.gateclosed.play()
-        if (type == true) {
+        this.shake(1000,100,1);
+        if(type == true){
             index = 31;
             index2 = 33;
-        } else {
+        }else{
             index = 3;
             index2 = 3;
         }
-        if (level == 1) {
-            this.map.fill(index, 70, 68, 2, 4, true, this.mainLayer);
-            this.map.fill(index, 62, 68, 2, 4, true, this.mainLayer);
-            this.map.setCollision(index, type);
-        } else if (level == 2) {
-            this.map.fill(index, 152, 68, 2, 4, true, this.mainLayer);
-            this.map.fill(index, 160, 68, 2, 4, true, this.mainLayer);
-            this.map.setCollision(index, type);
-        } else if (level == 3) {
-            this.map.fill(index2, 110, 46, 4, 2, true, this.mainLayer);
-            this.map.fill(index2, 110, 38, 4, 2, true, this.mainLayer);
-            this.map.setCollision(index2, type);
-        } else {
-            this.map.fill(index2, 110, 98, 4, 1, true, this.mainLayer);
-            this.map.fill(index2, 110, 91, 4, 1, true, this.mainLayer);
-            this.map.setCollision(index2, type);
+        if(level == 1){
+            this.map.fill(index,70,68,2,4, true, this.mainLayer);
+            this.map.fill(index,62,68,2,4, true, this.mainLayer);
+            this.map.setCollision(index,type);
+        }else if(level == 2){
+            this.map.fill(index,152,68,2,4, true, this.mainLayer);
+            this.map.fill(index,160,68,2,4, true, this.mainLayer);
+            this.map.setCollision(index,type);
+        }else if(level == 3){
+            this.map.fill(index2,110,46,4,2, true, this.mainLayer);
+            this.map.fill(index2,110,38,4,2, true, this.mainLayer);
+            this.map.setCollision(index2,type);
+        }else{
+            this.map.fill(index2,110,98,4,1, true, this.mainLayer);
+            this.map.fill(index2,110,91,4,1, true, this.mainLayer);
+            this.map.setCollision(index2,type);
         }
     }
 
@@ -190,6 +201,7 @@ class Play extends Phaser.Scene {
         this.load.image('retry1', './assets/RETRY.png');
         this.load.image('retry2', './assets/RETRY2.png');
         this.load.image('roll', './assets/sprites/elemental_wheel.png');
+        this.load.image('pt', './assets/Particle.png');
 
         //enemies
         this.load.spritesheet('fireghost', 'assets/sprites/fireghost.png', { frameWidth: 100, frameHeight: 100, startFrame: 0, endFrame: 4 });
@@ -377,7 +389,7 @@ class Play extends Phaser.Scene {
         mainLayer.setCollisionByProperty({
             collides: true
         });
-        map.replaceByIndex(40, 1)
+        map.replaceByIndex(40,1)
         //generate objects from tile map
 
         this.gemsLoc1 = map.createFromTiles(26, 1, {
@@ -451,20 +463,20 @@ class Play extends Phaser.Scene {
         this.keysGroup.runChildUpdate = true;
         this.keyGroup.children.each(function (keyloc) {
             var key;
-            if (keyloc.x < 3000 & !check1) {
-                key = new Pickup(this, keyloc.x + 24, keyloc.y + 24, 'UGem1', 1, this.keyLoc1[0]).setScale(0.8);
+            if(keyloc.x < 3000 & !check1){
+                key = new Pickup(this, keyloc.x+24, keyloc.y+24,'UGem1', 1, this.keyLoc1[0]).setScale(0.8);
                 key.active = true;
                 this.keysGroup.add(key);
-            } else if (keyloc.x > 8200 & !check2) {
-                key = new Pickup(this, keyloc.x + 24, keyloc.y + 24, 'UGem2', 2, this.keyLoc2[0]).setScale(0.8);
+            }else if(keyloc.x > 8200 & !check2){
+                key = new Pickup(this, keyloc.x+24, keyloc.y+24,'UGem2', 2, this.keyLoc2[0]).setScale(0.8);
                 key.active = true;
                 this.keysGroup.add(key);
-            } else if (keyloc.y < 2500 & !check3) {
-                key = new Pickup(this, keyloc.x + 24, keyloc.y + 24, 'UGem3', 3, this.keyLoc3[0]).setScale(0.8);
+            }else if(keyloc.y < 2500 & !check3){
+                key = new Pickup(this, keyloc.x+24, keyloc.y+24,'UGem3', 3, this.keyLoc3[0]).setScale(0.8);
                 key.active = true;
                 this.keysGroup.add(key);
-            } else if (!check0) {
-                key = new Pickup(this, keyloc.x + 24, keyloc.y + 24, 'UGem2', 0, this.keyLoc0[0]).setScale(0.8);
+            }else if(!check0){
+                key = new Pickup(this, keyloc.x+24, keyloc.y+24,'UGem2', 0, this.keyLoc0[0]).setScale(0.8);
                 key.active = true;
                 this.keysGroup.add(key);
             }
@@ -539,9 +551,21 @@ class Play extends Phaser.Scene {
             enemyLoc.destroy();
         }, this);
 
-        this.levelSwitch(0, true);
+        this.levelSwitch(0,true);
 
-
+        this.particles = this.add.particles('pt');
+        //particle emitter
+        this.emitter = this.particles.createEmitter({
+            x: {min: 0, max: 100},
+            y: {min:0, max: 100},
+            speed: 50,
+            lifespan: 1500,
+            blendMode: 'LUMINOSITY',
+            frequency: 5,
+            //alpha: {start: 1, end: 0},
+            scale: {start: 1, end: 0},
+            on: false
+        });
 
         this.menuConfig = {
             fontFamily: 'Impact',
@@ -563,19 +587,19 @@ class Play extends Phaser.Scene {
         this.checkLevelAll();
 
         player = new mage(this, centerX, centerY, 'player');
-        if (check0 == true) {
+        if(check0 == true){
             player.setPosition(5602, 3400);
-        } else {
+        }else{
             player.setPosition(5602, 6150);
         }
-        this.add.sprite(5608, 5500 + game.config.height / 4 - 100, 'roll').setScale(0.5, 0.5);
+        this.add.sprite(5608, 5500 + game.config.height / 4-100, 'roll').setScale(0.5, 0.5);
         this.Text = this.add.text(5608, 5500 + game.config.height / 6 * 2 + 300, '[WASD] to move, [mouse click] to shoot', this.menuConfig).setOrigin(0.5);
-        this.Text = this.add.text(5608, 5500 + game.config.height / 4 + 80, 'HOLD [mouse] and hover over a gem to swap gems', this.menuConfig).setOrigin(0.5);
-        this.Text = this.add.text(5608, 5500 + game.config.height / 4 - 220, 'Gems make you more effective against the countered enemies', this.menuConfig).setOrigin(0.5);
+        this.Text = this.add.text(5608, 5500 + game.config.height / 4+80, 'HOLD [mouse] and hover over a gem to swap gems', this.menuConfig).setOrigin(0.5);
+        this.Text = this.add.text(5608, 5500 + game.config.height / 4-220, 'Gems makes you more effective against countered enemies', this.menuConfig).setOrigin(0.5);
         this.Text = this.add.text(5608, 5500 + game.config.height / 6 * 2 + 230, 'INSTRUCTIONS:', this.menuConfig).setOrigin(0.5);
-        this.add.text(5608, 5500 + game.config.height / 6 * 2 + 360, '[ESC] to show mouse cursor', this.menuConfig).setOrigin(0.5);
-        this.add.text(5608, 5500 + game.config.height / 4 - 472, ' <- Collect the key stone to unlock doors', this.menuConfig).setOrigin(0.5);
-        this.add.text(5608, 5500 + game.config.height / 4 - 572, 'follow the key stone to seek power!', this.menuConfig).setOrigin(0.5);
+        this.add.text(5608, 5500 + game.config.height / 6 * 2 + 360, '[ESC] to show mouse', this.menuConfig).setOrigin(0.5);
+        this.add.text(5608, 5500 + game.config.height / 4-472, ' <- Collect the key stone to unlock doors', this.menuConfig).setOrigin(0.5);
+        this.add.text(5608, 5500 + game.config.height / 4-572, 'follow the key stone to seek power!', this.menuConfig).setOrigin(0.5);
 
         this.physics.add.collider(player, mainLayer);
 
@@ -597,13 +621,20 @@ class Play extends Phaser.Scene {
         this.currentZoom = 1;
         this.zooming = false;
 
+        this.shaking = false;
+        this.shaketime = 0;
+        this.targetx = 0;
+        this.targety = 0;
+        this.shakeCounter = 0;
+        this.shakeintense = 0;
+        this.shakeDamp = 1;
 
         //pause menu
         this.paused = true;
         this.aimAngle = 0;
-        this.button1 = this.add.sprite(centerX + 128, centerY + 128, 'retry1').setOrigin(0.5).setScale(2).setDepth(2).setVisible(false).setScrollFactor(0);
+        this.button1 = this.add.sprite(centerX+128, centerY+128, 'retry1').setOrigin(0.5).setScale(2).setDepth(2).setVisible(false).setScrollFactor(0);
 
-        this.button = this.add.sprite(centerX - 128, centerY + 128, 'menu1').setOrigin(0.5).setScale(2).setDepth(2).setVisible(false).setScrollFactor(0);
+        this.button = this.add.sprite(centerX-128, centerY+128, 'menu1').setOrigin(0.5).setScale(2).setDepth(2).setVisible(false).setScrollFactor(0);
         this.button.fixedToCamera = true;
 
         this.button.setInteractive();
@@ -647,7 +678,7 @@ class Play extends Phaser.Scene {
         this.physics.add.collider(this.enemies, this.playerBullets, this.enemyHit);
         this.playerCO = this.physics.add.collider(this.enemies, player, this.playerHit);
 
-        this.roll = this.add.sprite(988, 524, 'roll').setScale(0.3, 0.3);
+        this.roll = this.add.sprite(988,524, 'roll').setScale(0.3, 0.3);
         this.roll.setScrollFactor(0);
 
         let menuConfig = {
@@ -672,15 +703,18 @@ class Play extends Phaser.Scene {
         if (game.input.mouse.locked) {
             game.input.mouse.releasePointerLock();
         }
+        this.time.delayedCall(500, function () {
+            //this.sound.play('select');
+            this.cameras.main.fade(1500, 0, 0, 0);
+        }, [], this);
 
-        this.cameras.main.fade(1500, 0, 0, 0);
-        this.time.delayedCall(1500, function () {
+        this.time.delayedCall(2000, function () {
             //this.sound.play('select');
             this.scene.start('gameoverScene');
         }, [], this);
     }
 
-    toMenu() {
+    toMenu(){
         this.end = true;
         this.bgm.stop();
         this.cameras.main.fade(1500, 0, 0, 0);
@@ -701,56 +735,56 @@ class Play extends Phaser.Scene {
         // }, [], this);
     }
 
-    checkLevelAll() {
-        if (check0) {
+    checkLevelAll(){
+        if(check0){
             this.levelCheck(0);
         }
-        if (check1) {
+        if(check1){
             this.levelCheck(1);
         }
-        if (check2) {
+        if(check2){
             this.levelCheck(2);
         }
-        if (check3) {
+        if(check3){
             this.levelCheck(3);
         }
     }
 
-    levelCheck(level) {
-        if (level == 0) {
+    levelCheck(level){
+        if(level == 0){
             check0 = true;
-            this.add.sprite(this.keyLoc0[0].x, this.keyLoc0[0].y - 72, 'UGem2').setScale(0.8);
-        } else if (level == 1) {
+            this.add.sprite(this.keyLoc0[0].x,this.keyLoc0[0].y-72, 'UGem2').setScale(0.8);
+        }else if(level == 1){
             check1 = true;
-            this.levelSwitch(1, true);
+            this.levelSwitch(1,true);
             this.enemies.children.each(function (enemy) {
-                if (enemy.x < 3000) {
+                if(enemy.x < 3000){
                     enemy.die(true);
                 }
             }, this);
             //add a sprite
-            this.add.sprite(this.keyLoc1[0].x, this.keyLoc1[0].y - 72, 'UGem1').setScale(0.8);
+            this.add.sprite(this.keyLoc1[0].x,this.keyLoc1[0].y-72, 'UGem1').setScale(0.8);
 
-        } else if (level == 2) {
+        }else if(level == 2){
             check2 = true;
-            this.levelSwitch(2, true);
+            this.levelSwitch(2,true);
             this.enemies.children.each(function (enemy) {
-                if (enemy.x > 8200) {
+                if(enemy.x >8200){
                     enemy.die(true);
                 }
             }, this);
             //add a sprite
-            this.add.sprite(this.keyLoc2[0].x, this.keyLoc2[0].y - 72, 'UGem2').setScale(0.8);
-        } else if (level == 3) {
+            this.add.sprite(this.keyLoc2[0].x,this.keyLoc2[0].y-72, 'UGem2').setScale(0.8);
+        }else if(level == 3){
             check3 = true;
-            this.levelSwitch(3, true);
+            this.levelSwitch(3,true);
             this.enemies.children.each(function (enemy) {
-                if (enemy.y < 2500) {
+                if(enemy.y < 2500){
                     enemy.die(true);
                 }
             }, this);
             //add a sprite
-            this.add.sprite(this.keyLoc3[0].x, this.keyLoc3[0].y - 72, 'UGem3').setScale(0.8);
+            this.add.sprite(this.keyLoc3[0].x,this.keyLoc3[0].y-72, 'UGem3').setScale(0.8);
         }
         if (check0 && check1 && check2 && check3) {
             this.winSound.play();
@@ -774,7 +808,13 @@ class Play extends Phaser.Scene {
             indi.x = player.x + this.indiVector.x;
             indi.y = player.y + this.indiVector.y;
             if (game.input.mouse.locked == false) {
-                if (this.paused == false) {
+                if(this.paused == false){
+                    this.tweenpause = this.tweens.add({
+                        targets: [this.button,this.button1],
+                        alpha: {from:0, to:1},
+                        ease: 'Power2',
+                        duration: 150,
+                    });
                     this.paused = true;
                     this.button.setVisible(true);
                     this.button.setActive(true);
@@ -783,64 +823,87 @@ class Play extends Phaser.Scene {
                     this.button1.setActive(true);
                     this.button1.setInteractive(true);
                 }
-
-            } else {
-                if (this.paused == true) {
-                    this.button.setInteractive(false);
-                    this.paused = false;
-                    this.button.setVisible(false);
-                    this.button.setActive(false);
-                    this.button1.setInteractive(false);
-                    this.button1.setVisible(false);
-                    this.button1.setActive(false);
-                }
-
+                    
+            }else{
+                    if(this.paused == true){
+                        this.tweenpause = this.tweens.add({
+                            targets: [this.button,this.button1],
+                            alpha: 0,
+                            ease: 'Power2',
+                            duration: 150,
+                        });
+                        this.button.setInteractive(false);
+                        this.paused = false;
+                        this.button.setActive(false);
+                        this.button1.setInteractive(false);
+                        this.button1.setActive(false);
+                    }
+                    
             }
         } else {
             player.setMaxVelocity(0);
         }
 
         //pause menu
+        if(this.shaking == true){
+            if(this.shaketime > 0){
+                this.shakeCounter-=delta;
+                if(this.shakeCounter <= 0){
+                    this.shaketime-= this.shakeintense;
+                    this.shakeCounter = this.shakeintense;
+                    this.targetx = Phaser.Math.Between(-10*this.shakeDamp, 10*this.shakeDamp);
+                    console.log(this.targetx)
+                    this.targety = Phaser.Math.Between(-10*this.shakeDamp, 10*this.shakeDamp);
+                    this.shakeDamp*=0.9;
+                }
+                this.cameras.main.followOffset.x = Phaser.Math.Interpolation.Linear([this.cameras.main.followOffset.x, this.targetx], delta*0.02);
+                this.cameras.main.followOffset.y = Phaser.Math.Interpolation.Linear([this.cameras.main.followOffset.y, this.targety], delta*0.02);
+            }else{
+                this.cameras.main.followOffset.x = Phaser.Math.Interpolation.Linear([this.cameras.main.followOffset.x, 0], delta*0.01);
+                this.cameras.main.followOffset.y = Phaser.Math.Interpolation.Linear([this.cameras.main.followOffset.y, 0], delta*0.01);
+                if(this.cameras.main.followOffset.x == 0 & this.cameras.main.followOffset.y == 0){shaking = false;}
+            }
 
-
+        }
+        
         //level switch, detect if player is in area
         if (player.x > 3700 && player.x < 7500 && player.y > 2500 && player.y < 4520) {
-            if (this.inLevel == true) {
+            if(this.inLevel == true){
                 this.inLevel = false;
                 check0 = true;
-                if (this.level == 1) {
-                    this.levelSwitch(1, true);
-                } else if (this.level == 2) {
-                    this.levelSwitch(2, true);
-                } else if (this.level == 3) {
-                    this.levelSwitch(3, true);
-
+                if(this.level == 1){
+                    this.levelSwitch(1,true);
+                }else if(this.level == 2){
+                    this.levelSwitch(2,true);
+                }else if(this.level == 3){
+                    this.levelSwitch(3,true);
+                    
                 }
                 this.level = 0;
             }
-        } else {
-            if (this.inLevel == false & this.level == 0) {
-                if (player.x < 3000) {
+        }else{
+            if(this.inLevel == false & this.level == 0){
+                if(player.x < 3000){
                     this.level = 1;
-                    this.levelSwitch(1, true);
-                } else if (player.x > 8200) {
+                    this.levelSwitch(1,true);
+                }else if(player.x > 8200){
                     this.level = 2;
-                    this.levelSwitch(2, true);
-                } else if (player.y < 1700) {
+                    this.levelSwitch(2,true);
+                }else if(player.y < 1700){
                     this.level = 3;
-                    this.levelSwitch(3, true);
+                    this.levelSwitch(3,true);
+                }
                 }
             }
-        }
         //console.log('Level: ' + this.level);
 
-        indi.body.velocity.x = player.body.velocity.x;
-        indi.body.velocity.y = player.body.velocity.y;
-        reticle.body.velocity.x = player.body.velocity.x;
-        reticle.body.velocity.y = player.body.velocity.y;
+            indi.body.velocity.x = player.body.velocity.x;
+            indi.body.velocity.y = player.body.velocity.y;
+            reticle.body.velocity.x = player.body.velocity.x;
+            reticle.body.velocity.y = player.body.velocity.y;
 
-        //console.log(map.getTileAtWorldXY(reticle.x, reticle.y));
-        this.constrainReticle(reticle);
+            //console.log(map.getTileAtWorldXY(reticle.x, reticle.y));
+            this.constrainReticle(reticle);
 
 
         // if(this.zooming){
