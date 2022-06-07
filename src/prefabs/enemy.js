@@ -125,7 +125,7 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
                     this.scene.shake(210,70,0.2);
                 }
                 if(sp){
-                    console.log(element)
+                    //console.log(element)
                     damage *= 2;
                 }
                 var targetAngle = Phaser.Math.Angle.Between(player.x,player.y,this.x,this.y);

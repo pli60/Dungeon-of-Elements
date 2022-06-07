@@ -710,7 +710,7 @@ class Play extends Phaser.Scene {
 
         this.time.delayedCall(2000, function () {
             //this.sound.play('select');
-            this.scene.start('menuScene');
+            this.scene.start('gameoverScene');
         }, [], this);
     }
 
