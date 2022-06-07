@@ -191,8 +191,11 @@ class mage extends Phaser.Physics.Arcade.Sprite {
 
 
         // Locks pointer on mousedown
-        game.canvas.addEventListener('mousedown', function () {
-            game.input.mouse.requestPointerLock();
+        this.locker = game.canvas.addEventListener('mousedown', function () {
+            if(gamestate){
+                game.input.mouse.requestPointerLock();
+            }
+            //game.input.mouse.requestPointerLock();
         });
 
         // Exit pointer lock when Q or escape (by default) is pressed.
@@ -268,6 +271,7 @@ class mage extends Phaser.Physics.Arcade.Sprite {
         this.circle.setVisible(false).setActive(false);
         this.arrow.setVisible(false).setActive(false);
         this.scene.sound.play('playerdeath');
+        gamestate = false;
         this.scene.gameover();
     }
 

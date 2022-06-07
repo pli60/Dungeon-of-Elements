@@ -428,7 +428,7 @@ class Play extends Phaser.Scene {
         this.keyLoc1 = map.createFromTiles(48, 1, {
             key: "tilemap",
             frame: 37,
-            origin: (0.5, 0.5),
+            origin: 0.5,
             scale: 1.5
         })
         //this.keyLoc1[0].setScale(2);
@@ -436,28 +436,28 @@ class Play extends Phaser.Scene {
         this.keyLoc2 = map.createFromTiles(49, 1, {
             key: "tilemap",
             frame: 37,
-            origin: [0.5, 0.4],
+            origin: 0.5,
             scale: 1.5
         })
 
         this.keyLoc3 = map.createFromTiles(50, 1, {
             key: "tilemap",
             frame: 37,
-            origin: [0.5, 0],
+            origin: 0.5,
             scale: 1.5
         })
 
         this.keyLoc0 = map.createFromTiles(51, 1, {
             key: "tilemap",
             frame: 37,
-            originX: 0.5,
-            originY: 0.4,
+            origin: 0.5,
             scale: 1.5
         })
         this.keyLoc = map.createFromTiles(38, 1, {
             key: "tilemap",
             frame: 48,
         })
+        gamestate = true;
         this.keyGroup = this.add.group(this.keyLoc);
         this.keysGroup = this.add.group();
         this.keysGroup.runChildUpdate = true;
@@ -700,9 +700,6 @@ class Play extends Phaser.Scene {
         this.sound.play('lose');
         this.bgm.stop();
         this.physics.world.removeCollider(this.playerCO);
-        if (game.input.mouse.locked) {
-            game.input.mouse.releasePointerLock();
-        }
         this.button.setVisible(false);
         this.button1.setVisible(false);
 
@@ -713,7 +710,7 @@ class Play extends Phaser.Scene {
 
         this.time.delayedCall(2000, function () {
             //this.sound.play('select');
-            this.scene.start('gameoverScene');
+            this.scene.start('menuScene');
         }, [], this);
     }
 
@@ -730,6 +727,7 @@ class Play extends Phaser.Scene {
         //this.sound.play('select');
         //console.log(this.clicked);
         this.button.setScale(2.1);
+        this.bgm.stop();
         this.sound.play('select');
         this.toMenu()
         // this.time.delayedCall(100, function () {
@@ -818,6 +816,8 @@ class Play extends Phaser.Scene {
                         ease: 'Power2',
                         duration: 150,
                     });
+                    player.setAccelerationX(0);
+                    player.setAccelerationY(0);
                     this.paused = true;
                     this.button.setVisible(true);
                     this.button.setActive(true);

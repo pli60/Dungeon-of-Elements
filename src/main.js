@@ -38,6 +38,7 @@ let check0 = false;
 let check1 = false;
 let check2 = false;
 let check3 = false;
+let gamestate = false;
 let elementSprites = ['bullet','waterGem','fireGem','lightningGem']
 let elements = ['water','fire','lightning'];
 let enemyTypes = ['slime','ghost','skeleton'];

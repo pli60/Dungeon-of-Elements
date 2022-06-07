@@ -6,7 +6,7 @@ class Gameover extends Phaser.Scene {
         preload() {
                 // load audio
                 this.load.audio('select', './assets/audio/Select.wav');
-                this.load.image('background', './assets/menubg.png');
+                this.load.image('bg', './assets/menuover.png');
                 //this.load.image('menu', './assets/dinomenu.png');
                 this.load.image('retry1', './assets/RETRY.png');
                 this.load.image('retry2', './assets/RETRY2.png');
@@ -16,8 +16,22 @@ class Gameover extends Phaser.Scene {
         }
 
         create() {
-                this.add.image(1024, 576, 'background').setOrigin(1);
-                this.Text = this.add.text(game.config.width / 2, game.config.height / 4 * 2, 'GAME OVER', menuConfig).setOrigin(0.5);
+                let menuConfig = {
+                        fontFamily: 'Impact',
+                        fontSize: '28px',
+                        color: '#FFFFFF',
+                        align: 'center',
+                        padding: {
+                            top: 5,
+                            bottom: 5,
+                        },
+                        fixedWidth: 0
+                    }
+                this.cameras.main.fadeFrom(1000, 0, 0, 0);
+                this.add.image(1024, 576, 'bg').setOrigin(1).setDisplaySize(1024, 576);
+                this.Text = this.add.text(game.config.width / 2, game.config.height / 4 * 2+25, 'click Retry to continue', menuConfig).setOrigin(0.5);
+                menuConfig.fontSize = '40px';
+                this.Text = this.add.text(game.config.width / 2, game.config.height / 4, 'GAME OVER', menuConfig).setOrigin(0.5);
                 this.button = this.add.sprite(game.config.width / 3, game.config.height / 3 * 2, 'menu1').setOrigin(0.5).setScale(2);
                 this.button.setInteractive();
                 this.input.on('gameobjectup', this.clicked, this);
