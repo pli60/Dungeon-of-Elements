@@ -24,7 +24,7 @@ class Menu extends Phaser.Scene {
 
         // add background
         this.add.image(1024, 576, 'background').setOrigin(1);
-
+        this.start = false;
         // text
         let menuConfig = {
             fontFamily: 'Impact',
@@ -70,18 +70,20 @@ class Menu extends Phaser.Scene {
 
 
     clicked(pointer, gameObject) {
-        //this.sound.play('select');
-        this.button.setInteractive(false);
-        this.button.setScale(2);
-        this.cameras.main.fade(1000, 0, 0, 0);
-        let soundConfig = {
-            volume: 0.5
+        if(this.start == false){
+            this.start = true;
+            this.button.setInteractive(false);
+            this.button.setScale(2);
+            this.cameras.main.fade(1000, 0, 0, 0);
+            let soundConfig = {
+                volume: 0.5
+            }
+            this.sound.play('select', soundConfig);
+            this.cameras.main.on('camerafadeoutcomplete', function () {
+                //this.sound.play('select',soundConfig);
+                this.scene.start("playScene");
+            }, this);
         }
-        this.sound.play('select', soundConfig);
-        this.cameras.main.on('camerafadeoutcomplete', function () {
-            //this.sound.play('select',soundConfig);
-            this.scene.start("playScene");
-        }, this);
     }
 
     update() {
