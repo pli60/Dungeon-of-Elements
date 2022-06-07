@@ -703,6 +703,9 @@ class Play extends Phaser.Scene {
         if (game.input.mouse.locked) {
             game.input.mouse.releasePointerLock();
         }
+        this.button.setVisible(false);
+        this.button1.setVisible(false);
+
         this.time.delayedCall(500, function () {
             //this.sound.play('select');
             this.cameras.main.fade(1500, 0, 0, 0);
@@ -852,7 +855,7 @@ class Play extends Phaser.Scene {
                     this.shaketime-= this.shakeintense;
                     this.shakeCounter = this.shakeintense;
                     this.targetx = Phaser.Math.Between(-10*this.shakeDamp, 10*this.shakeDamp);
-                    console.log(this.targetx)
+                    //console.log(this.targetx)
                     this.targety = Phaser.Math.Between(-10*this.shakeDamp, 10*this.shakeDamp);
                     this.shakeDamp*=0.9;
                 }
