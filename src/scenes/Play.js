@@ -729,7 +729,7 @@ class Play extends Phaser.Scene {
                 }
             }, this);
             //add a sprite
-            this.add.sprite(this.keyLoc1[0].x,this.keyLoc0[0].y-72, 'UGem1').setScale(0.8);
+            this.add.sprite(this.keyLoc1[0].x,this.keyLoc1[0].y-72, 'UGem1').setScale(0.8);
 
         }else if(level == 2){
             check2 = true;

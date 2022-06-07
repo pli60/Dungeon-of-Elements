@@ -13,12 +13,14 @@ class Menu extends Phaser.Scene {
         //this.load.image('menu', './assets/dinomenu.png');
         this.load.image('play1', './assets/PLAY.png');
         this.load.image('play2', './assets/PLAY2.png');
+        this.load.image('target', 'assets/sprites/cross.png');
 
     }
 
     create() {
         // define keys
         keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.keyEnter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
         // add background
         this.add.image(1024, 576, 'background').setOrigin(1);
@@ -26,8 +28,8 @@ class Menu extends Phaser.Scene {
         // text
         let menuConfig = {
             fontFamily: 'Impact',
-            fontSize: '28px',
-            color: '#000000',
+            fontSize: '17px',
+            color: '#FFFFFF',
             align: 'center',
             padding: {
                 top: 5,
@@ -35,12 +37,20 @@ class Menu extends Phaser.Scene {
             },
             fixedWidth: 0,
         }
-        this.Text = this.add.text(game.config.width / 2, game.config.height / 2 * 2, '[Click here to start]', menuConfig).setOrigin(0.5);
+
+        reticle = this.physics.add.sprite(centerX, centerY, 'target');
+    
+    
+        // this.Text = this.add.text(game.config.width / 2, game.config.height / 2 * 2, '[Click here to start]', menuConfig).setOrigin(0.5);
         this.button = this.add.sprite(game.config.width / 2, game.config.height / 5 * 4, 'play1').setOrigin(0.5).setScale(2);
         this.button.setInteractive();
-        this.Text = this.add.text(game.config.width / 2, game.config.height / 3.3 * 2, '[WASD] to move, [LEFT click] to shoot', menuConfig).setOrigin(0.5);
-        this.Text = this.add.text(game.config.width / 2, game.config.height / 3 * 2, 'Long hold [LEFT click] to swap gem, [ESC] to show mouse cursor', menuConfig).setOrigin(0.5);
-        this.Text = this.add.text(game.config.width / 2, game.config.height / 2 * 1, 'INSTRUCTIONS:', menuConfig).setOrigin(0.5);
+        // this.Text = this.add.text(game.config.width / 2, game.config.height / 3.3 * 2, '[WASD] to move, [LEFT click] to shoot', menuConfig).setOrigin(0.5);
+        // this.Text = this.add.text(game.config.width / 2, game.config.height / 3 * 2, 'Long hold [LEFT click] to swap gem, [ESC] to show mouse cursor', menuConfig).setOrigin(0.5);
+        this.Text = this.add.text(game.config.width / 2, game.config.height / 3 * 2, 'Pengfei Li, Sean Lee, Ziyi Yu', menuConfig).setOrigin(0.5);
+
+        menuConfig.fontSize = '21px';
+
+        this.Text = this.add.text(game.config.width / 2, game.config.height / 2 * 1.2, 'Game By', menuConfig).setOrigin(0.5);
 
         this.input.on('gameobjectup', this.clicked, this);
         this.input.on('gameobjectdown', function (pointer, object) {
@@ -76,7 +86,10 @@ class Menu extends Phaser.Scene {
     }
 
     update() {
-        if (Phaser.Input.Keyboard.JustDown(keySPACE)) {
+        reticle.x = this.input.x;
+        reticle.y = this.input.y;
+
+        if (Phaser.Input.Keyboard.JustDown(keySPACE) | Phaser.Input.Keyboard.JustDown(this.keyEnter)) {
             // game.settings = {
 
             // }
