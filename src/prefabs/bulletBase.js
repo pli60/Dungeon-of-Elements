@@ -13,8 +13,8 @@ class BulletBase extends Phaser.Physics.Arcade.Sprite {
             this.setRotation(angle);
             this.setDepth(3);
             this.end = false;
-            this.body.velocity.x = Math.cos(angle) * (velocity) + player.body.velocity.x;
-            this.body.velocity.y = Math.sin(angle) * (velocity) + player.body.velocity.y;
+            this.body.velocity.x = Math.cos(angle) * (velocity);
+            this.body.velocity.y = Math.sin(angle) * (velocity);
             if(type == 0){
                 this.setSize(32, 32).setDisplaySize(32, 32);
             }

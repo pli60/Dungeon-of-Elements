@@ -75,7 +75,7 @@ class Pickup extends Phaser.Physics.Arcade.Sprite {
                 }
             }else{
                 this.playerRing.angle -= 0.2;
-                if(Phaser.Math.Distance.Between(this.x,this.y, player.x,player.y) < 256 & this.actived == false & this.end == false){
+                if(Phaser.Math.Distance.Between(this.x,this.y, player.x,player.y) < 216 & this.actived == false & this.end == false){
                     this.activing = true;
                     this.scene.pickupReady.play()
                     this.playerRing.setVisible(false);
