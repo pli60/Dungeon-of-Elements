@@ -39,8 +39,7 @@ class Menu extends Phaser.Scene {
         }
 
         reticle = this.physics.add.sprite(centerX, centerY, 'target');
-    
-    
+
         // this.Text = this.add.text(game.config.width / 2, game.config.height / 2 * 2, '[Click here to start]', menuConfig).setOrigin(0.5);
         this.button = this.add.sprite(game.config.width / 2, game.config.height / 5 * 4, 'play1').setOrigin(0.5).setScale(2);
         this.button.setInteractive();
@@ -78,7 +77,7 @@ class Menu extends Phaser.Scene {
         let soundConfig = {
             volume: 0.5
         }
-        this.sound.play('select',soundConfig);
+        this.sound.play('select', soundConfig);
         this.cameras.main.on('camerafadeoutcomplete', function () {
             //this.sound.play('select',soundConfig);
             this.scene.start("playScene");
