@@ -56,4 +56,11 @@ let menuConfig = {
 let keySPACE, keyW, keyA, keyS, keyD, keyFIRE, keyESC;
 var cursors;
 
+// Credit :
+
+// Pengfei Li - Artist/Programmer
+
+// Ziyi Yu - Artist/Programmer
+
+// Sean Lee - Artist/Audio designer
 
