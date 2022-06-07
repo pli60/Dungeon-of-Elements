@@ -41,7 +41,17 @@ class Pickup extends Phaser.Physics.Arcade.Sprite {
             //this.scene.time.delayedCall(1000, this.move, [], this);
             //this.move();
 
+            this.particles = this.scene.add.particles('pt');
 
+            this.emitter = this.particles.createEmitter({
+                speed: {min: 200, max: 205},
+                lifespan: {min: 1200, max: 1250},
+                frequency: 120,
+                alpha: {start: 1, end: 0},
+                scale: {min: 0.4, max: 0.5, end: 0},
+                tint: 0xFFFFFF,
+                on: false
+            });
 
 
     }
@@ -62,6 +72,7 @@ class Pickup extends Phaser.Physics.Arcade.Sprite {
                     this.activing = false;
                     this.scene.inLevel = true;
                     //this.scene.pickupReady.play()
+                    
                     if(this.number != 0){
                         this.scene.levelSwitch(this.number,false);
                         this.scene.levelSwitch((this.number)%3+1,true);
@@ -77,6 +88,7 @@ class Pickup extends Phaser.Physics.Arcade.Sprite {
                 this.playerRing.angle -= 0.2;
                 if(Phaser.Math.Distance.Between(this.x,this.y, player.x,player.y) < 216 & this.actived == false & this.end == false){
                     this.activing = true;
+                    this.emitter.emitParticleAt(this.x, this.y, 40)
                     this.scene.pickupReady.play()
                     this.playerRing.setVisible(false);
                 }
@@ -123,6 +135,7 @@ class Pickup extends Phaser.Physics.Arcade.Sprite {
                     this.body.velocity.y =0;
                     this.x = this.target.x;
                     this.y = this.target.y-72;
+                    this.emitter.emitParticleAt(this.x, this.y, 40)
                     if(this.number != 0){
                         this.scene.levelSwitch((this.number)%3+1,false);
                         this.scene.levelSwitch((this.number+1)%3+1,false);

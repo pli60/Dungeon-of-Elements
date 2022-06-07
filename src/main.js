@@ -41,6 +41,7 @@ let check3 = false;
 let elementSprites = ['bullet','waterGem','fireGem','lightningGem']
 let elements = ['water','fire','lightning'];
 let enemyTypes = ['slime','ghost','skeleton'];
+let colorcode = [0x1111FF,0xFF0000,0xFFFF00];
 let menuConfig = {
         fontFamily: 'Impact',
         fontSize: '28px',

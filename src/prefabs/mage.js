@@ -39,6 +39,32 @@ class mage extends Phaser.Physics.Arcade.Sprite {
             volume: 0.4
         }
 
+        this.particles = this.scene.add.particles('pt');
+
+        this.emitter1 = this.particles.createEmitter({
+            x: {min: 0, max: 100},
+            y: {min:0, max: 100},
+            speed: {min: 200, max: 220},
+            lifespan: {min: 150, max: 200},
+
+            frequency: 12,
+            alpha: {start: 1, end: 0},
+            scale: {min: 0.1, max: 0.2, end: 0},
+            tint: 0xFFFFFF,
+            on: false
+        });
+        this.emitter = this.particles.createEmitter({
+            x: {min: 0, max: 100},
+            y: {min:0, max: 100},
+            speed: {min: 200, max: 220},
+            lifespan: {min: 150, max: 200},
+
+            frequency: 12,
+            alpha: {start: 1, end: 0},
+            scale: {min: 0.1, max: 0.2, end: 0},
+            tint: 0xFFFFFF,
+            on: false
+        });
         scene.input.on('pointerdown', function (pointer, time, lastFired) {
             if (player.active === false)
                 return;
@@ -70,6 +96,7 @@ class mage extends Phaser.Physics.Arcade.Sprite {
                 if(this.charged){
                     this.tween.stop();
                 }
+                
                 //this.scene.cameras.main.zoom = 1;
                 this.checkCharge(false);
                 if(this.holding == true & this.activing == false){
@@ -82,16 +109,23 @@ class mage extends Phaser.Physics.Arcade.Sprite {
                     }, [], this);
                     player.anims.play('player_attack2');
                     if(this.charged == false){
+                        this.scene.shake(150,50,0.1);
                         //this.scene.sound.play('shoot');
                         if(this.weapon == 0) {
                             this.scene.sound.play('shoot',soundConfig);
                             var bullet = scene.spawnBullet(player.x, player.y, scene.aimAngle,this.weapon, 1);
+                            var emitange = Phaser.Math.RadToDeg(scene.aimAngle);
                         }else{
                             this.scene.sound.play(elements[this.weapon-1]+'shot',soundConfig);
                             var bullet = scene.spawnBullet(player.x, player.y, scene.aimAngle,this.weapon, 0);
                             //var bullet = scene.spawnBullet(indi.x, indi.y, scene.aimAngle+1,this.weapon, 0);
                             //var bullet = scene.spawnBullet(indi.x, indi.y, scene.aimAngle-1,this.weapon, 0);
                         }
+                        this.emitter.emitParticleAt(indi.x, indi.y, 5)
+                        //particle emitter
+
+                
+                        
                     //charged attack
                     }else{
                         this.cd = 30;
@@ -99,12 +133,51 @@ class mage extends Phaser.Physics.Arcade.Sprite {
                             //get gem
                             
                             this.scene.gemsGroup.getChildren().forEach(this.getgem, this);
+
+                            this.emitter = this.particles.createEmitter({
+                                x: {min: 0, max: 100},
+                                y: {min:0, max: 100},
+                                speed: {min: 100, max: 110},
+                                lifespan: {min: 400, max: 450},
+                                frequency: 12,
+                                alpha: {start: 1, end: 0},
+                                scale: {min: 0.1, max: 0.2, end: 0},
+                                tint: colorcode[this.weapon-1],
+                                on: false
+                            });
+
+                            this.emitter3 = this.particles.createEmitter({
+                                speed: {min: 300, max: 310},
+                                lifespan: {min: 800, max: 820},
+                                frequency: 20,
+                                alpha: {start: 1, end: 0},
+                                scale: {min: 0.2, max: 0.25, end: 0},
+                                tint: colorcode[this.weapon-1],
+                                on: false
+                            });
+
+                            this.emitter3.emitParticleAt(this.x, this.y, 40);
                         }else{
+                            this.emitter4 = this.particles.createEmitter({
+                                x: {min: 0, max: 100},
+                                y: {min:0, max: 100},
+                                speed: {min: 300, max: 320},
+                                lifespan: {min: 600, max: 800},
+                                frequency: 30,
+                                alpha: {start: 1, end: 0},
+                                scale: {min: 0.3, max: 0.5, end: 0},
+                                tint: colorcode[this.weapon-1],
+                                on: false
+                            });
+                            this.emitter4.emitParticleAt(indi.x, indi.y, 8)
+                            this.emitter.remove();
+                            this.emitter = this.emitter1;
                             //release gem
                             this.scene.sound.play('spshot');
                             this.lockedGem.release();
                             this.switchWeapon(0);
                         }
+                        this.scene.shake()
                         //this.checkCharge(false);
                         this.charged = false;
                     }
@@ -167,7 +240,6 @@ class mage extends Phaser.Physics.Arcade.Sprite {
                     loop: 1,
                 });
             var targetAngle = Phaser.Math.Angle.Between(enemy.x,enemy.y,this.x,this.y);
-            
             this.health -= 1;
             //this.stopped == true;
             if(this.health <= 0){
@@ -190,6 +262,8 @@ class mage extends Phaser.Physics.Arcade.Sprite {
     die(){
         // player.setActive(false);
         //stop playing walking
+        //this.scene.cameras.main.flash(200, 50, 0, 0);
+        this.scene.cameras.main.flash(200, 50, 0, 0);
         this.scene.walking.stop();
         this.circle.setVisible(false).setActive(false);
         this.arrow.setVisible(false).setActive(false);

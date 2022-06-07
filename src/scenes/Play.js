@@ -22,6 +22,16 @@ class Play extends Phaser.Scene {
         };
     }
 
+    shake(duration = 300, intensity = 100, damp = 1) {
+        this.shaking = true;
+        this.shaketime = duration;
+        this.targetx = Phaser.Math.Between(-10*damp, 10*damp);
+        this.targety = Phaser.Math.Between(-10*damp, 10*damp);
+        this.shakeCounter = intensity;
+        this.shakeintense = intensity;
+        this.shakeDamp = damp;
+    }
+
     //calculate look at rotation
     lookAt(x, y) {
         var angle = Math.atan2(y, x);
@@ -141,6 +151,7 @@ class Play extends Phaser.Scene {
         var index;
         var index2;
         this.gateclosed.play()
+        this.shake(1000,100,1);
         if(type == true){
             index = 31;
             index2 = 33;
@@ -190,6 +201,7 @@ class Play extends Phaser.Scene {
         this.load.image('retry1', './assets/RETRY.png');
         this.load.image('retry2', './assets/RETRY2.png');
         this.load.image('roll', './assets/sprites/elemental_wheel.png');
+        this.load.image('pt', './assets/Particle.png');
 
         //enemies
         this.load.spritesheet('fireghost', 'assets/sprites/fireghost.png', { frameWidth: 100, frameHeight: 100, startFrame: 0, endFrame: 4 });
@@ -541,7 +553,19 @@ class Play extends Phaser.Scene {
 
         this.levelSwitch(0,true);
 
-
+        this.particles = this.add.particles('pt');
+        //particle emitter
+        this.emitter = this.particles.createEmitter({
+            x: {min: 0, max: 100},
+            y: {min:0, max: 100},
+            speed: 50,
+            lifespan: 1500,
+            blendMode: 'LUMINOSITY',
+            frequency: 5,
+            //alpha: {start: 1, end: 0},
+            scale: {start: 1, end: 0},
+            on: false
+        });
 
         this.menuConfig = {
             fontFamily: 'Impact',
@@ -597,6 +621,13 @@ class Play extends Phaser.Scene {
         this.currentZoom = 1;
         this.zooming = false;
 
+        this.shaking = false;
+        this.shaketime = 0;
+        this.targetx = 0;
+        this.targety = 0;
+        this.shakeCounter = 0;
+        this.shakeintense = 0;
+        this.shakeDamp = 1;
 
         //pause menu
         this.paused = true;
@@ -672,9 +703,12 @@ class Play extends Phaser.Scene {
         if (game.input.mouse.locked) {
             game.input.mouse.releasePointerLock();
         }
+        this.time.delayedCall(500, function () {
+            //this.sound.play('select');
+            this.cameras.main.fade(1500, 0, 0, 0);
+        }, [], this);
 
-        this.cameras.main.fade(1500, 0, 0, 0);
-        this.time.delayedCall(1500, function () {
+        this.time.delayedCall(2000, function () {
             //this.sound.play('select');
             this.scene.start('gameoverScene');
         }, [], this);
@@ -775,6 +809,12 @@ class Play extends Phaser.Scene {
             indi.y = player.y + this.indiVector.y;
             if (game.input.mouse.locked == false) {
                 if(this.paused == false){
+                    this.tweenpause = this.tweens.add({
+                        targets: [this.button,this.button1],
+                        alpha: {from:0, to:1},
+                        ease: 'Power2',
+                        duration: 150,
+                    });
                     this.paused = true;
                     this.button.setVisible(true);
                     this.button.setActive(true);
@@ -786,12 +826,16 @@ class Play extends Phaser.Scene {
                     
             }else{
                     if(this.paused == true){
+                        this.tweenpause = this.tweens.add({
+                            targets: [this.button,this.button1],
+                            alpha: 0,
+                            ease: 'Power2',
+                            duration: 150,
+                        });
                         this.button.setInteractive(false);
                         this.paused = false;
-                        this.button.setVisible(false);
                         this.button.setActive(false);
                         this.button1.setInteractive(false);
-                        this.button1.setVisible(false);
                         this.button1.setActive(false);
                     }
                     
@@ -801,7 +845,26 @@ class Play extends Phaser.Scene {
         }
 
         //pause menu
+        if(this.shaking == true){
+            if(this.shaketime > 0){
+                this.shakeCounter-=delta;
+                if(this.shakeCounter <= 0){
+                    this.shaketime-= this.shakeintense;
+                    this.shakeCounter = this.shakeintense;
+                    this.targetx = Phaser.Math.Between(-10*this.shakeDamp, 10*this.shakeDamp);
+                    console.log(this.targetx)
+                    this.targety = Phaser.Math.Between(-10*this.shakeDamp, 10*this.shakeDamp);
+                    this.shakeDamp*=0.9;
+                }
+                this.cameras.main.followOffset.x = Phaser.Math.Interpolation.Linear([this.cameras.main.followOffset.x, this.targetx], delta*0.02);
+                this.cameras.main.followOffset.y = Phaser.Math.Interpolation.Linear([this.cameras.main.followOffset.y, this.targety], delta*0.02);
+            }else{
+                this.cameras.main.followOffset.x = Phaser.Math.Interpolation.Linear([this.cameras.main.followOffset.x, 0], delta*0.01);
+                this.cameras.main.followOffset.y = Phaser.Math.Interpolation.Linear([this.cameras.main.followOffset.y, 0], delta*0.01);
+                if(this.cameras.main.followOffset.x == 0 & this.cameras.main.followOffset.y == 0){shaking = false;}
+            }
 
+        }
         
         //level switch, detect if player is in area
         if (player.x > 3700 && player.x < 7500 && player.y > 2500 && player.y < 4520) {

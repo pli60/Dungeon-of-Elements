@@ -112,13 +112,17 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
                         damage = 3;
                         this.soundConfig.volume=2;
                         this.scene.sound.play('sphit',this.soundConfig);
+                        this.scene.shake(260,40,0.8);
                     }else{
                         this.soundConfig.volume=1.2;
                         this.scene.sound.play('hit',this.soundConfig);
+                        this.scene.shake(250,50,0.4);
                     }
                 }else{
                     this.soundConfig.volume=1;
                     this.scene.sound.play('hit',this.soundConfig);
+                    this.scene.sound.play('hit',this.soundConfig);
+                    this.scene.shake(210,70,0.2);
                 }
                 if(sp){
                     console.log(element)
@@ -131,6 +135,7 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
                 //this.stopped == true;
                 if(this.health <= 0){
                     this.die();
+                    this.scene.shake(200 * (this.type+1),50,0.4+0.3*(this.type+1));
                 }else{
                     this.takingHit = true;
                     this.scene.time.delayedCall(320, function(){
@@ -218,6 +223,28 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
                 loop: 0,
             });
         }
+
+        this.particles = this.scene.add.particles('pt');
+        this.particles.setDepth(this.depth);
+        this.particles.setAlpha(this.alpha);
+
+        //particle emitter
+        this.emitter = this.particles.createEmitter({
+            x: {min: 0, max: 100},
+            y: {min:0, max: 100},
+            angle: {min: 0, max: 360},
+            speed: {min: 100*[this.type+1], max: 120*[this.type+1]},
+            lifespan: {min: 400*[this.type+1], max: 500*[this.type+1]},
+            //blendMode: 'LUMINOSITY',
+            frequency: 12 *[this.type+1],
+            alpha: {start: 1, end: 0},
+            scale: {min: 0.1*[this.type+1], max: 0.2*[this.type+1], end: 0},
+            tint: {from: colorcode[this.element-1], to: 0x000000},
+            on: false
+        });
+
+        this.particles.emitParticleAt(this.x, this.y, 5)
+
         this.scene.time.delayedCall(100, function(){
             this.scene.enemies.remove(this);
         }, [], this);
