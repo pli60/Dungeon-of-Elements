@@ -8,6 +8,8 @@ class Menu extends Phaser.Scene {
         this.load.audio('select', './assets/audio/Select.wav');
 
         // load menu background
+        this.load.image('background', './assets/menubg.png');
+
         //this.load.image('menu', './assets/dinomenu.png');
         this.load.image('play1', './assets/PLAY.png');
         this.load.image('play2', './assets/PLAY2.png');
@@ -19,7 +21,7 @@ class Menu extends Phaser.Scene {
         keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
         // add background
-        //this.add.image(1280, 720, 'menu').setOrigin(1);
+        this.add.image(1024, 576, 'background').setOrigin(1);
 
         // text
         let menuConfig = {
@@ -33,12 +35,12 @@ class Menu extends Phaser.Scene {
             },
             fixedWidth: 0,
         }
-        this.Text = this.add.text(game.config.width / 2, game.config.height / 3 * 2, '[Click here to start]', menuConfig).setOrigin(0.5);
-        this.button = this.add.sprite(game.config.width / 2, game.config.height / 3 * 2, 'play1').setOrigin(0.5).setScale(2);
+        this.Text = this.add.text(game.config.width / 2, game.config.height / 2 * 2, '[Click here to start]', menuConfig).setOrigin(0.5);
+        this.button = this.add.sprite(game.config.width / 2, game.config.height / 5 * 4, 'play1').setOrigin(0.5).setScale(2);
         this.button.setInteractive();
-        this.Text = this.add.text(game.config.width / 2, game.config.height / 4.5 * 2, '[WASD] to move, [LEFT click] to shoot', menuConfig).setOrigin(0.5);
-        this.Text = this.add.text(game.config.width / 2, game.config.height / 4 * 2, 'Long hold [LEFT click] to swap gem, [ESC] to show mouse cursor', menuConfig).setOrigin(0.5);
-        this.Text = this.add.text(game.config.width / 2, game.config.height / 6 * 2, 'INSTRUCTIONS:', menuConfig).setOrigin(0.5);
+        this.Text = this.add.text(game.config.width / 2, game.config.height / 3.3 * 2, '[WASD] to move, [LEFT click] to shoot', menuConfig).setOrigin(0.5);
+        this.Text = this.add.text(game.config.width / 2, game.config.height / 3 * 2, 'Long hold [LEFT click] to swap gem, [ESC] to show mouse cursor', menuConfig).setOrigin(0.5);
+        this.Text = this.add.text(game.config.width / 2, game.config.height / 2 * 1, 'INSTRUCTIONS:', menuConfig).setOrigin(0.5);
 
         this.input.on('gameobjectup', this.clicked, this);
         this.input.on('gameobjectdown', function (pointer, object) {

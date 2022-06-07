@@ -17,7 +17,7 @@ let config = {
                 autoCenter: Phaser.Scale.CENTER_BOTH
             },
         //scene: [ Menu, Play ],
-        scene: [ Menu, Play, Gameover ],
+        scene: [ Menu, Play, Gameover, Win ],
         backgroundColor: 0x739CD3
 }
 
